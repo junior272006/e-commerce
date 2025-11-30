@@ -1,11 +1,13 @@
 const express=require('express')
 const app=express()
+require('dotenv').config();
 const mongoose=require('mongoose')
 
 mongoose
-  .connect('mongodb+srv://junior27nguetta_db_user:kGXspdJtecbU7m7t@cluster0.fjm9rei.mongodb.net/juniorDB?retryWrites=true&w=majority')
+  mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch((err) => console.error("Connexion à MongoDB échouée !", err));
+
 
 
 app.use((req, res, next) => {
@@ -17,7 +19,9 @@ app.use((req, res, next) => {
 
 app.use(express.json())
 
-
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Backend fonctionne!' });
+});
 
 
 module.exports=app
