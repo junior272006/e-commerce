@@ -3,7 +3,6 @@ const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-// Connexion MongoDB (correction : enlever le "mongoose" en double)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log(" Connexion à MongoDB réussie !"))
   .catch((err) => console.error(" Connexion à MongoDB échouée !", err));
