@@ -1,4 +1,7 @@
 import { createTheme, rem } from "@mantine/core";
+// theme.d.ts
+import '@mantine/core';
+
 
 export const theme = createTheme({
   fontFamily: "Work Sans, sans-serif",
