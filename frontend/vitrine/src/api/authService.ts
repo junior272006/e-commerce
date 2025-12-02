@@ -13,10 +13,7 @@ interface UserData {
   address?: string;
 }
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
+
 
 interface ApiResponse {
   message?: string;
