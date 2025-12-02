@@ -148,6 +148,8 @@ export default function Header() {
           <Stack gap="sm" mt="md">
             <Button variant="default" fullWidth>Se connecter</Button>
             <Button 
+            component={Link}
+  to="/register"
               variant="gradient"
               gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}
               fullWidth
