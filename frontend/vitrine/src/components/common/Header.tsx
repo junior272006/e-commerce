@@ -8,7 +8,7 @@ import {
   ScrollArea,
   Text,
   Stack,
-  Menu
+  Menu,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -20,6 +20,7 @@ import {
   IconShoe,
   IconDeviceLaptop
 } from '@tabler/icons-react';
+import { Link } from "react-router-dom";
 import classes from './Header.module.css';
 
 export default function Header() {
@@ -74,7 +75,8 @@ export default function Header() {
           {/* ------------------- DESKTOP BUTTONS -------------------- */}
           <Group visibleFrom="sm">
             <Button variant="default">Se connecter</Button>
-            <Button variant="gradient" gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}>
+            <Button  component={Link}
+  to="/register" variant="gradient" gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}>
               Créer un compte
             </Button>
           </Group>

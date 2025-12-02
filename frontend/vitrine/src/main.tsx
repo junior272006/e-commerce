@@ -4,6 +4,7 @@ import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.tsx';
+import Inscription from './pages/Register.tsx';
 import { theme } from './theme.ts';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -11,6 +12,7 @@ createRoot(document.getElementById('root')!).render(
       <Router>
         <Routes>
           <Route path="/" element={<Home/>} />
+            <Route path="/register" element={<Inscription/>} />
         </Routes>
       </Router>
     </MantineProvider>

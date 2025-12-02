@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <Box style={{ position: 'relative', width: '100%', height: 650 }}>
+      <Box style={{ position: 'relative', width: '100%', height: 700 }}>
         {/* Image de fond */}
         <img
           src="/vintage.jpeg"
