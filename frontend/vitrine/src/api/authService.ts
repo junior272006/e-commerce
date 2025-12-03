@@ -1,6 +1,6 @@
 const API_URL = 'https://e-commerce-3-clba.onrender.com/api';
 
-// ✅ TYPES DÉFINIS
+//  TYPES DÉFINIS
 interface UserData {
   firstName: string;
   lastName: string;
@@ -22,10 +22,8 @@ interface ApiResponse {
   user?: any;
 }
 
-/**
- * Inscription d'un nouvel utilisateur
- */
-export const registerUser = async (userData: UserData): Promise<ApiResponse> => {
+
+export const registerAdmin = async (userData: UserData): Promise<ApiResponse> => {
   try {
     const dataToSend = {
       firstname: userData.firstName,
@@ -62,3 +60,39 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
     throw error;
   }
 };
+
+export const registerUser= async (userData:UserData): Promise<ApiResponse> =>{
+  try{
+const datasig={
+  firstname: userData.firstName,
+   lastname: userData.lastName,
+      email: userData.email,
+      phone: userData.phone,
+      password: userData.password,
+      confirmPassword: userData.confirmPassword,
+}
+const response= await fetch (`${API_URL}/user/signup`,
+  (
+    {
+      method:'POST',
+      headers:{
+         'Content-Type': 'application/json',
+      },
+      body:JSON.stringify(datasig)
+    }
+  )
+)
+const data: ApiResponse= await response.json()
+console.log(data)
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'Erreur inscription');
+    }
+
+    return data;
+  }
+  catch (error) {
+    console.error( error);
+    throw error;
+  }
+}

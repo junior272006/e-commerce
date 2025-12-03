@@ -4,7 +4,7 @@ const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
 const AdminRoute = require('./routes/admin');
-
+const UserRoute=require('./routes/user')
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log(" Connexion à MongoDB réussie !"))
   .catch((err) => console.error(" Connexion à MongoDB échouée !", err));
@@ -18,5 +18,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api', AdminRoute);
+app.use('/api', UserRoute);
 
 module.exports = app;

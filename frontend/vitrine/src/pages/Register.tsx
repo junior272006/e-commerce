@@ -62,15 +62,12 @@ export default function Inscription() {
     try {
       await registerUser(formData);
       setActive(2);
+      setTimeout(() => navigate('/dashboard'), 2000);
     } catch (err: any) {
       setError(err.message || 'Erreur lors de l\'inscription');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFinish = () => {
-    setTimeout(() => navigate('/'), 2000);
   };
 
   const ProfileCard = ({ type, icon, title, description, color }: any) => (
@@ -379,11 +376,8 @@ export default function Inscription() {
               </ThemeIcon>
               <Title order={2} c="shopGreen.6">Inscription validée !</Title>
               <Text size="lg" ta="center" c="dimmed" maw={400}>
-                Votre compte a été créé avec succès. Redirection vers l'accueil...
+                Votre compte a été créé avec succès. Redirection en cours...
               </Text>
-              <Button size="lg" color="shopGreen" onClick={handleFinish} mt="md">
-                Aller à l'accueil
-              </Button>
             </Stack>
           </Center>
         )}
