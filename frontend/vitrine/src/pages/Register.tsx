@@ -10,7 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
 import { registerUser } from '../api/authService';
-
+import { registerAdmin } from '../api/authService';
 type UserType = 'client' | 'vendeur' | null;
 
 export default function Inscription() {
@@ -21,7 +21,7 @@ export default function Inscription() {
   const [userType, setUserType] = useState<UserType>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     password: '', confirmPassword: '',
@@ -41,7 +41,7 @@ export default function Inscription() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError('Les mots de passe ne correspondent pas');
       return;
@@ -52,7 +52,8 @@ export default function Inscription() {
       return;
     }
 
-    if (userType === 'vendeur' && (!formData.shopName || !formData.siret || !formData.address)) {
+    if (userType === 'vendeur' &&
+      (!formData.shopName || !formData.siret || !formData.address)) {
       setError('Veuillez remplir tous les champs obligatoires');
       return;
     }
@@ -60,14 +61,27 @@ export default function Inscription() {
     setLoading(true);
 
     try {
-      await registerUser(formData);
-      setActive(2);
-      setTimeout(() => navigate('/dashboard'), 2000);
-    } catch (err: any) {
-      setError(err.message || 'Erreur lors de l\'inscription');
-    } finally {
-      setLoading(false);
+  if (userType === 'vendeur') {
+    await registerAdmin(formData);   // 👉 pour les vendeurs
+  } else {
+    await registerUser(formData);    // 👉 pour les clients
+  }
+
+  setActive(2);
+
+  setTimeout(() => {
+    if (userType === 'vendeur') {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
     }
+  }, 1500);
+
+} catch (err: any) {
+  setError(err.message || "Erreur lors de l'inscription");
+} finally {
+  setLoading(false);
+}
   };
 
   const ProfileCard = ({ type, icon, title, description, color }: any) => (
@@ -76,7 +90,7 @@ export default function Inscription() {
       p="lg"
       radius="md"
       withBorder
-      style={{ 
+      style={{
         cursor: 'pointer',
         transition: 'all 0.3s ease',
         border: '2px solid transparent',
@@ -115,8 +129,8 @@ export default function Inscription() {
         {active < 2 ? (
           <>
             <Center>
-              <Stepper 
-                active={active} 
+              <Stepper
+                active={active}
                 onStepClick={setActive}
                 orientation="horizontal"
                 styles={{
@@ -125,19 +139,17 @@ export default function Inscription() {
                     maxWidth: '600px',
                     marginBottom: '40px'
                   },
-                  step: {
-                    flex: '1'
-                  }
+                  step: { flex: '1' }
                 }}
               >
                 <Stepper.Step 
                   label="Étape 1" 
-                  description="Choix du Profil" 
+                  description="Choix du Profil"
                   icon={<IconUser size={18} />}
                 />
                 <Stepper.Step 
                   label="Étape 2" 
-                  description="Inscription" 
+                  description="Inscription"
                   icon={<IconMail size={18} />}
                 />
               </Stepper>
@@ -146,11 +158,11 @@ export default function Inscription() {
             {active === 0 ? (
               <Stack gap="lg" align="center">
                 <Text ta="center" size="lg" fw={600}>Faites votre choix</Text>
-                
+
                 <SimpleGrid 
                   cols={isMobile ? 1 : 2} 
-                  spacing="lg" 
-                  w="100%" 
+                  spacing="lg"
+                  w="100%"
                   style={{ maxWidth: isMobile ? '400px' : '600px' }}
                 >
                   <ProfileCard
@@ -172,192 +184,138 @@ export default function Inscription() {
             ) : (
               <form onSubmit={handleSubmit}>
                 <Stack gap="md" align="center">
-                  <Title order={4} ta="center" c={userType === 'client' ? 'shopGreen' : 'shopOrange'}>
+                  <Title 
+                    order={4} 
+                    ta="center" 
+                    c={userType === 'client' ? 'shopGreen' : 'shopOrange'}
+                  >
                     Inscription {userType === 'client' ? 'Client' : 'Vendeur'}
                   </Title>
 
                   <Stack gap="md" w="100%" style={{ maxWidth: '600px' }}>
                     {error && (
-                      <Alert icon={<IconAlertCircle size={18} />} color="red" onClose={() => setError('')} withCloseButton>
+                      <Alert 
+                        icon={<IconAlertCircle size={18} />} 
+                        color="red" 
+                        onClose={() => setError('')} 
+                        withCloseButton
+                      >
                         {error}
                       </Alert>
                     )}
 
-                    {!isMobile && (
-                      <Group grow>
-                        <TextInput 
-                          label="Prénom" 
-                          name="firstName" 
-                          value={formData.firstName} 
-                          onChange={handleChange} 
-                          placeholder="Entrez votre prénom" 
-                          required 
-                        />
-                        <TextInput 
-                          label="Nom" 
-                          name="lastName" 
-                          value={formData.lastName} 
-                          onChange={handleChange} 
-                          placeholder="Entrez votre nom" 
-                          required 
-                        />
-                      </Group>
-                    )}
-
-                    {isMobile && (
-                      <>
-                        <TextInput 
-                          label="Prénom" 
-                          name="firstName" 
-                          value={formData.firstName} 
-                          onChange={handleChange} 
-                          placeholder="Entrez votre prénom" 
-                          required 
-                        />
-                        <TextInput 
-                          label="Nom" 
-                          name="lastName" 
-                          value={formData.lastName} 
-                          onChange={handleChange} 
-                          placeholder="Entrez votre nom" 
-                          required 
-                        />
-                      </>
-                    )}
+                    {/* Champs pour Client / Vendeur */}
+                    <Group grow={!isMobile} gap="md">
+                      <TextInput 
+                        label="Prénom"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        placeholder="Entrez votre prénom"
+                        required
+                      />
+                      <TextInput 
+                        label="Nom"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        placeholder="Entrez votre nom"
+                        required
+                      />
+                    </Group>
 
                     <TextInput 
-                      label="Email" 
-                      name="email" 
-                      type="email" 
-                      value={formData.email} 
-                      onChange={handleChange} 
-                      leftSection={<IconMail size={16} />} 
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      leftSection={<IconMail size={16} />}
                       placeholder="exemple@email.com"
-                      required 
+                      required
                     />
 
                     <TextInput 
-                      label="Téléphone" 
-                      name="phone" 
-                      value={formData.phone} 
-                      onChange={handleChange} 
-                      leftSection={<IconPhone size={16} />} 
+                      label="Téléphone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      leftSection={<IconPhone size={16} />}
                       placeholder="Ex: 0123456789"
-                      required 
+                      required
                     />
 
+                    {/* Champs spécifiques vendeur */}
                     {userType === 'vendeur' && (
                       <>
                         <TextInput 
-                          label="Nom de la boutique" 
-                          name="shopName" 
-                          value={formData.shopName} 
-                          onChange={handleChange} 
-                          placeholder="Nom de votre boutique" 
-                          required 
+                          label="Nom de la boutique"
+                          name="shopName"
+                          value={formData.shopName}
+                          onChange={handleChange}
+                          placeholder="Nom de votre boutique"
+                          required
                         />
-                        
-                        {!isMobile ? (
-                          <Group grow>
-                            <TextInput 
-                              label="SIRET" 
-                              name="siret" 
-                              value={formData.siret} 
-                              onChange={handleChange} 
-                              placeholder="Numéro SIRET" 
-                              required 
-                            />
-                            <TextInput 
-                              label="Adresse" 
-                              name="address" 
-                              value={formData.address} 
-                              onChange={handleChange} 
-                              placeholder="Adresse complète" 
-                              required 
-                            />
-                          </Group>
-                        ) : (
-                          <>
-                            <TextInput 
-                              label="SIRET" 
-                              name="siret" 
-                              value={formData.siret} 
-                              onChange={handleChange} 
-                              placeholder="Numéro SIRET" 
-                              required 
-                            />
-                            <TextInput 
-                              label="Adresse" 
-                              name="address" 
-                              value={formData.address} 
-                              onChange={handleChange} 
-                              placeholder="Adresse complète" 
-                              required 
-                            />
-                          </>
-                        )}
+
+                        <Group grow={!isMobile} gap="md">
+                          <TextInput 
+                            label="SIRET"
+                            name="siret"
+                            value={formData.siret}
+                            onChange={handleChange}
+                            placeholder="Numéro SIRET"
+                            required
+                          />
+                          <TextInput 
+                            label="Adresse"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            placeholder="Adresse complète"
+                            required
+                          />
+                        </Group>
                       </>
                     )}
 
-                    {!isMobile ? (
-                      <Group grow>
-                        <PasswordInput 
-                          label="Mot de passe" 
-                          name="password" 
-                          value={formData.password} 
-                          onChange={handleChange} 
-                          leftSection={<IconLock size={16} />} 
-                          placeholder="6 caractères minimum"
-                          required 
-                        />
-                        <PasswordInput 
-                          label="Confirmer" 
-                          name="confirmPassword" 
-                          value={formData.confirmPassword} 
-                          onChange={handleChange} 
-                          leftSection={<IconLock size={16} />} 
-                          placeholder="Confirmez votre mot de passe"
-                          required 
-                        />
-                      </Group>
-                    ) : (
-                      <>
-                        <PasswordInput 
-                          label="Mot de passe" 
-                          name="password" 
-                          value={formData.password} 
-                          onChange={handleChange} 
-                          leftSection={<IconLock size={16} />} 
-                          placeholder="6 caractères minimum"
-                          required 
-                        />
-                        <PasswordInput 
-                          label="Confirmer" 
-                          name="confirmPassword" 
-                          value={formData.confirmPassword} 
-                          onChange={handleChange} 
-                          leftSection={<IconLock size={16} />} 
-                          placeholder="Confirmez votre mot de passe"
-                          required 
-                        />
-                      </>
-                    )}
+                    {/* Mots de passe */}
+                    <Group grow={!isMobile} gap="md">
+                      <PasswordInput 
+                        label="Mot de passe"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        leftSection={<IconLock size={16} />}
+                        placeholder="6 caractères minimum"
+                        required
+                      />
+                      <PasswordInput 
+                        label="Confirmer"
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        leftSection={<IconLock size={16} />}
+                        placeholder="Confirmez votre mot de passe"
+                        required
+                      />
+                    </Group>
 
                     <Group justify="space-between" mt="xl">
                       <Button 
-                        variant="default" 
-                        onClick={() => { 
-                          setActive(0); 
-                          setUserType(null); 
-                          setError(''); 
-                        }} 
+                        variant="default"
+                        onClick={() => {
+                          setActive(0);
+                          setUserType(null);
+                          setError('');
+                        }}
                         disabled={loading}
                       >
                         Retour
                       </Button>
+
                       <Button 
-                        type="submit" 
-                        color={userType === 'client' ? 'shopGreen' : 'shopOrange'} 
+                        type="submit"
+                        color={userType === 'client' ? 'shopGreen' : 'shopOrange'}
                         loading={loading}
                       >
                         Valider
