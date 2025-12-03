@@ -8,7 +8,6 @@ const userSchema=mongoose.Schema(
         email:{type:String,required:true},
         phone:{type:Number,required:true},
         password:{type:String,required:true,unique:true},
-        confirmPassword:{type:String,required:true,unique:true},
     }
 )
 
