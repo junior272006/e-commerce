@@ -112,9 +112,9 @@ export const getAdmin = async (): Promise<ApiResponse> => {
     throw error;
   }
 };
+
 // ------------------- CHECK ADMIN AUTH -------------------
 export const isAdminAuthenticated = (): boolean => {
   const token = localStorage.getItem('adminToken');
   return !!token; // renvoie true si token présent, false sinon
 };
-
