@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.tsx';
 import Inscription from './pages/Register.tsx';
 import { theme } from './theme.ts';
-import Dashboard from './pages/admin/Dashboard.tsx';
+import Dashboard from './pages/Dashboard.tsx';
 import AdminLogin from './pages/admin/Login.tsx';
 import AdminDashboard from './pages/admin/Dashboard.tsx';
 import ProtectedAdminRoute from './components/admin/PrivateRoute.tsx';
