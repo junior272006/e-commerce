@@ -3,7 +3,7 @@ const cors = require('cors'); // Installez avec: npm install cors
 const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
-const AdminRoute = require('./routes/admin');
+const AdminRoute=require('./routes/admin')
 const UserRoute=require('./routes/user')
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log(" Connexion à MongoDB réussie !"))
@@ -17,7 +17,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/api', AdminRoute);
 app.use('/api', UserRoute);
-
+app.use('/api',AdminRoute)
 module.exports = app;
