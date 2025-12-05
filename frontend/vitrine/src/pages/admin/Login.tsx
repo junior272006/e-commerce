@@ -6,7 +6,7 @@ import {
   Button, Stack, Alert, Center, ThemeIcon
 } from '@mantine/core';
 import { IconMail, IconLock, IconAlertCircle, IconShield } from '@tabler/icons-react';
-import { loginAdmin,getAdmin } from '../../api/authService';
+import { loginAdmin } from '../../api/authService';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -18,12 +18,10 @@ export default function AdminLogin() {
     password: ''
   });
 
-  // Mise à jour des inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -32,10 +30,6 @@ export default function AdminLogin() {
     try {
       // 🔑 Login admin et stockage du token dans localStorage
       await loginAdmin(formData);
-
-      // 🛠 Optionnel : vérifier que le token est valide et récupérer les infos admin
-      const adminData = await getAdmin();
-      console.log('Admin connecté :', adminData.admin);
 
       // 🔄 Redirection vers le dashboard
       navigate('/admin/dashboard');
