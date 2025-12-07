@@ -50,10 +50,10 @@ exports.LoginUser= (req,res,next) =>{
         }
         else{
             res.status(200).json({
-              _id:user.id,
+              id:user._id,
              email:user.email,
              token:jwt.sign(
-                   { id: user.id},
+                   { id: user._id},
               process.env.JWT_SECRET,
               { expiresIn: '24h' }
              )
