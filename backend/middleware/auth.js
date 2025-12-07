@@ -1,6 +1,6 @@
 const jwt=require('jsonwebtoken')
 const Admin=require('../models/admin')
-
+const User= require('../models/user')
 exports.auth = async(req,res,next) => {
 
     try{
@@ -26,3 +26,26 @@ if (!admin) {
  res.status(401).json({ message: 'Token invalide ou expiré.' });
     }
 }
+
+exports.authUser = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+      return res.status(401).json({ message: 'Accès non autorisé' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    req.user = user;
+    req.token = token;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token invalide ou expiré.' });
+  }
+};

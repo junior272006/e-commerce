@@ -74,7 +74,9 @@ export default function Header() {
 
           {/* ------------------- DESKTOP BUTTONS -------------------- */}
           <Group visibleFrom="sm">
-            <Button variant="default">Se connecter</Button>
+            <Button component={Link} to="/user/login" variant="default">
+              Se connecter
+            </Button>
             <Button component={Link} to="/register" variant="gradient" gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}>
               Créer un compte
             </Button>
@@ -145,7 +147,15 @@ export default function Header() {
 
           {/* Bottom buttons mobile */}
           <Stack gap="sm" mt="md">
-            <Button variant="default" fullWidth>Se connecter</Button>
+            <Button 
+              component={Link} 
+              to="/user/login" 
+              onClick={closeDrawer}
+              variant="default" 
+              fullWidth
+            >
+              Se connecter
+            </Button>
             <Button 
               component={Link}
               to="/register"

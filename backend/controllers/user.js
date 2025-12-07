@@ -34,3 +34,52 @@ exports.CreateUser= (req,res,next)=>{
     })
      .catch((error)=>{res.status(400).json({ error: error.message })})
 }
+
+exports.LoginUser= (req,res,next) =>{
+    const {email,password}= req.body
+  User.findOne({email:req.body.email})
+  .then(user =>{
+    if (user===null){
+        return res.status(401).json({message:'Erreur de mot de passe'})
+    }
+
+    bcrypt.compare(req.body.password,user.password)
+    .then(valid=>{
+        if(!valid){
+              return res.status(401).json({message:'Autorisation refusée'})
+        }
+        else{
+            res.status(200).json({
+              _id:user.id,
+             email:user.email,
+             token:jwt.sign(
+                   { id: user.id},
+              process.env.JWT_SECRET,
+              { expiresIn: '24h' }
+             )
+            })
+        }
+    })
+    .catch(err => res.status(500).json({ message: 'Erreur serveur', error: err.message }))
+  })
+  .catch(err => res.status(500).json({ message: 'Erreur serveur', error: err.message }))
+}
+
+
+
+// 📊 GET USER
+exports.getUser = (req, res, next) => {
+  try {
+    res.json({
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        firstname: req.user.firstname,
+        lastname: req.user.lastname,
+        phone: req.user.phone,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
+  }
+};

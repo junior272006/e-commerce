@@ -25,6 +25,8 @@ export interface ApiResponse {
   token?: string;
   user?: any;
   admin?: any;
+  id?: string;
+  email?: string;
 }
 
 // ------------------- INSCRIPTION USER -------------------
@@ -37,9 +39,6 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
       phone: userData.phone,
       password: userData.password,
       confirmPassword: userData.confirmPassword,
-      shopName: userData.shopName,
-      siret: userData.siret,
-      address: userData.address
     };
 
     const response = await fetch(`${API_URL}/user/signup`, {
@@ -62,7 +61,64 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
 };
 
 // ------------------- LOGIN USER -------------------
+export const loginUser = async (loginData: LoginData): Promise<ApiResponse> => {
+  try {
+    const response = await fetch(`${API_URL}/user/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginData)
+    });
 
+    const data: ApiResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'Erreur de connexion');
+    }
+
+    // Stockage du token utilisateur
+    if (data.token) {
+      localStorage.setItem('userToken', data.token);
+      // Optionnel : stocker aussi l'id et l'email
+      if (data.id) localStorage.setItem('userId', data.id);
+      if (data.email) localStorage.setItem('userEmail', data.email);
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// ------------------- GET USER INFO -------------------
+export const getUser = async (): Promise<ApiResponse> => {
+  try {
+    const token = localStorage.getItem('userToken');
+    if (!token) throw new Error('Utilisateur non connecté');
+
+    const response = await fetch(`${API_URL}/user/me`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const data: ApiResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'Impossible de récupérer les infos utilisateur');
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// ------------------- CHECK USER AUTH -------------------
+export const isUserAuthenticated = (): boolean => {
+  const token = localStorage.getItem('userToken');
+  return !!token;
+};
 
 // ------------------- LOGIN ADMIN -------------------
 export const loginAdmin = async (loginData: LoginData): Promise<ApiResponse> => {
@@ -116,5 +172,5 @@ export const getAdmin = async (): Promise<ApiResponse> => {
 // ------------------- CHECK ADMIN AUTH -------------------
 export const isAdminAuthenticated = (): boolean => {
   const token = localStorage.getItem('adminToken');
-  return !!token; // renvoie true si token présent, false sinon
+  return !!token;
 };
