@@ -39,9 +39,9 @@ export default function Header() {
           {/* -------------------- DESKTOP LINKS -------------------- */}
           <Group h="100%" gap="md" visibleFrom="sm">
             {/* Accueil */}
-            <a href="#" className={classes.link}>
+            <Link to="/" className={classes.link}>
               <Group gap="xs"><IconHome size={18}/> Accueil</Group>
-            </a>
+            </Link>
 
             {/* PRODUITS DROPDOWN */}
             <Menu shadow="md" width={200} trigger="hover" openDelay={100} closeDelay={150}>
@@ -62,12 +62,12 @@ export default function Header() {
             </Menu>
 
             {/* Panier */}
-            <a href="#" className={classes.link}>
+            <a className={classes.link} style={{ cursor: "pointer" }}>
               <Group gap="xs"><IconShoppingCart size={18}/> Panier</Group>
             </a>
 
             {/* Contact */}
-            <a href="#" className={classes.link}>
+            <a className={classes.link} style={{ cursor: "pointer" }}>
               <Group gap="xs"><IconPhone size={18}/> Contactez-nous</Group>
             </a>
           </Group>
@@ -75,8 +75,7 @@ export default function Header() {
           {/* ------------------- DESKTOP BUTTONS -------------------- */}
           <Group visibleFrom="sm">
             <Button variant="default">Se connecter</Button>
-            <Button  component={Link}
-  to="/register" variant="gradient" gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}>
+            <Button component={Link} to="/register" variant="gradient" gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}>
               Créer un compte
             </Button>
           </Group>
@@ -105,9 +104,9 @@ export default function Header() {
           <Divider my="sm" />
 
           {/* Accueil */}
-          <a href="#" className={classes.link}>
+          <Link to="/" className={classes.link} onClick={closeDrawer}>
             <Group gap="xs"><IconHome size={18}/> Accueil</Group>
-          </a>
+          </Link>
 
           {/* -------------------- PRODUITS catégorie MOBILE -------------------- */}
           <Stack gap={4} px="md" mt="xs">
@@ -115,30 +114,30 @@ export default function Header() {
               <Group gap={4}><IconBox size={18}/> Produits</Group>
             </Text>
 
-            <a className={classes.link}>
+            <a className={classes.link} style={{ cursor: "pointer" }}>
               <Group gap="xs"><IconShirt size={16}/> Vêtements Homme</Group>
             </a>
 
-            <a className={classes.link}>
+            <a className={classes.link} style={{ cursor: "pointer" }}>
               <Group gap="xs"><IconShirt size={16}/> Vêtements Femme</Group>
             </a>
 
-            <a className={classes.link}>
+            <a className={classes.link} style={{ cursor: "pointer" }}>
               <Group gap="xs"><IconDeviceLaptop size={16}/> Accessoires</Group>
             </a>
 
-            <a className={classes.link}>
+            <a className={classes.link} style={{ cursor: "pointer" }}>
               <Group gap="xs"><IconShoe size={16}/> Chaussures</Group>
             </a>
           </Stack>
 
           {/* Panier */}
-          <a href="#" className={classes.link} style={{ marginTop: 10 }}>
+          <a className={classes.link} style={{ marginTop: 10, cursor: "pointer" }}>
             <Group gap="xs"><IconShoppingCart size={18}/> Panier</Group>
           </a>
 
           {/* Contact */}
-          <a href="#" className={classes.link}>
+          <a className={classes.link} style={{ cursor: "pointer" }}>
             <Group gap="xs"><IconPhone size={18}/> Contactez-nous</Group>
           </a>
 
@@ -148,8 +147,9 @@ export default function Header() {
           <Stack gap="sm" mt="md">
             <Button variant="default" fullWidth>Se connecter</Button>
             <Button 
-            component={Link}
-  to="/register"
+              component={Link}
+              to="/register"
+              onClick={closeDrawer}
               variant="gradient"
               gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}
               fullWidth
