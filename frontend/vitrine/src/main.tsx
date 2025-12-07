@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css'; 
 import { HashRouter, Routes, Route } from 'react-router-dom';
+import Contact from './pages/Contact.tsx';
 import Login from './pages/Login.tsx';
 import Home from './pages/Home.tsx';
 import Inscription from './pages/Register.tsx';
@@ -21,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/register" element={<Inscription />} />
           <Route path="/dashboard" element={<Dashboard />} />
 <Route path="/user/login" element={<Login />} />
-
+<Route path="/contact" element={<Contact />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route 
             path="/admin/dashboard" 

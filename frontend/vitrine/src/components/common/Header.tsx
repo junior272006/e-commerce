@@ -66,10 +66,10 @@ export default function Header() {
               <Group gap="xs"><IconShoppingCart size={18}/> Panier</Group>
             </a>
 
-            {/* Contact */}
-            <a className={classes.link} style={{ cursor: "pointer" }}>
+            {/* Contact - MODIFIÉ */}
+            <Link to="/contact" className={classes.link}>
               <Group gap="xs"><IconPhone size={18}/> Contactez-nous</Group>
-            </a>
+            </Link>
           </Group>
 
           {/* ------------------- DESKTOP BUTTONS -------------------- */}
@@ -138,10 +138,10 @@ export default function Header() {
             <Group gap="xs"><IconShoppingCart size={18}/> Panier</Group>
           </a>
 
-          {/* Contact */}
-          <a className={classes.link} style={{ cursor: "pointer" }}>
+          {/* Contact - MODIFIÉ */}
+          <Link to="/contact" className={classes.link} onClick={closeDrawer}>
             <Group gap="xs"><IconPhone size={18}/> Contactez-nous</Group>
-          </a>
+          </Link>
 
           <Divider my="sm" />
 
