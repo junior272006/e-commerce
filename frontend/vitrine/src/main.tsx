@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css'; 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 
 import Home from './pages/Home.tsx';
 import Inscription from './pages/Register.tsx';
@@ -15,7 +15,7 @@ import ProtectedAdminRoute from './components/admin/PrivateRoute.tsx';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider theme={theme}>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Inscription />} />
@@ -31,7 +31,7 @@ createRoot(document.getElementById('root')!).render(
             }
           />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </MantineProvider>
   </StrictMode>
 );
