@@ -2,53 +2,78 @@ import Header from "../components/common/Header";
 import { Box, Text, Button } from "@mantine/core";
 import Footer from "../components/common/Footer";
 import { FeaturesAsymmetrical } from "../components/common/CaracteristicsCard";
+import { motion } from "framer-motion";
+
 export default function Home() {
   return (
     <>
       <Header />
-      <Box style={{ position: 'relative', width: '100%', height: 700 }}>
+
+      <Box style={{ position: "relative", width: "100%", height: 700 }}>
         {/* Image de fond */}
         <img
           src="/vintage.jpeg"
           alt="Produit"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
 
-        {/* Texte et bouton superposés */}
+        {/* Texte + bouton animés */}
         <Box
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center',
-            color: 'white',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center",
+            color: "white",
           }}
         >
-          <Text
-            style={{
-              fontSize: 32,
-              fontWeight: 700,
-              textShadow: '1px 1px 5px rgba(0,0,0,0.5)',
-              marginBottom: 20,
-            }}
+          {/* Texte animé */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Bienvenue Chez DjassamanShop
-          </Text>
+            <Text
+              style={{
+                fontSize: 32,
+                fontWeight: 700,
+                textShadow: "1px 1px 5px rgba(0,0,0,0.5)",
+                marginBottom: 20,
+              }}
+            >
+              Bienvenue Chez DjassamanShop
+            </Text>
+          </motion.div>
 
-          <Button
-            variant="gradient"
-            gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}
-            size="md"
+          {/* Bouton animé */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
           >
-            Voir nos articles
-          </Button>
+            <Button
+              variant="gradient"
+              gradient={{ from: "shopOrange.5", to: "neutral.7", deg: 120 }}
+              size="md"
+            >
+              Voir nos articles
+            </Button>
+          </motion.div>
         </Box>
       </Box>
-      
-      <FeaturesAsymmetrical />
-      <Footer/>
+
+      {/* Animation de la section Features */}
+      <motion.div
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <FeaturesAsymmetrical />
+      </motion.div>
+
+      <Footer />
     </>
-    
   );
 }

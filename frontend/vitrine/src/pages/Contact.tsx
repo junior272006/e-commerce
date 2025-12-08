@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { TextInput, Textarea, Button, Container, Title, Grid, Paper, Group, Text, Stack } from '@mantine/core';
-import { IconMail, IconPhone, IconMapPin } from '@tabler/icons-react';
+import { TextInput, Textarea, Button, Container, Title, Grid, Paper, Group, Text, Stack, Notification } from '@mantine/core';
+import { IconMail, IconPhone, IconMapPin, IconCheck, IconX } from '@tabler/icons-react';
 import Header from '../components/common/Header';
+import { message as sendMessage } from '../api/authService';  
+import type { MessageData } from '../api/authService';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -11,25 +13,84 @@ export default function ContactForm() {
     message: ''
   });
 
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    type: 'success' | 'error';
+    message: string;
+  }>({
+    show: false,
+    type: 'success',
+    message: ''
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Message envoyé avec succès !');
+    setLoading(true);
+    setNotification({ show: false, type: 'success', message: '' });
+
+    try {
+      const messageData: MessageData = {
+        name: formData.nom,
+        email: formData.email,
+        sujet: formData.sujet,
+        message: formData.message
+      };
+
+      const response = await sendMessage(messageData);  // ← Utiliser sendMessage
+
+      setNotification({
+        show: true,
+        type: 'success',
+        message: response.message || 'Message envoyé avec succès !'
+      });
+
+      setFormData({
+        nom: '',
+        email: '',
+        sujet: '',
+        message: ''
+      });
+
+    } catch (error: any) {
+      setNotification({
+        show: true,
+        type: 'error',
+        message: error.message || 'Une erreur est survenue lors de l\'envoi du message'
+      });
+    } finally {
+      setLoading(false);
+      
+      setTimeout(() => {
+        setNotification({ show: false, type: 'success', message: '' });
+      }, 5000);
+    }
   };
 
   return (
     <div style={{ background: 'var(--mantine-color-neutral-1)', minHeight: '100vh' }}>
-   
-      {<Header /> }
+      {<Header />}
       
       <Container size="xl" py={80}>
         <Title order={1} mb={40} c="neutral.9">
           CONTACTEZ-NOUS
         </Title>
+
+        {notification.show && (
+          <Notification
+            icon={notification.type === 'success' ? <IconCheck size={18} /> : <IconX size={18} />}
+            color={notification.type === 'success' ? 'teal' : 'red'}
+            title={notification.type === 'success' ? 'Succès' : 'Erreur'}
+            mb={20}
+            onClose={() => setNotification({ ...notification, show: false })}
+          >
+            {notification.message}
+          </Notification>
+        )}
 
         <Grid gutter={30}>
           <Grid.Col span={{ base: 12, md: 7 }}>
@@ -43,6 +104,8 @@ export default function ContactForm() {
                     size="sm"
                     value={formData.nom}
                     onChange={handleChange}
+                    required
+                    disabled={loading}
                   />
 
                   <TextInput
@@ -54,6 +117,8 @@ export default function ContactForm() {
                     value={formData.email}
                     onChange={handleChange}
                     leftSection={<IconMail size={16} />}
+                    required
+                    disabled={loading}
                   />
 
                   <TextInput
@@ -63,6 +128,8 @@ export default function ContactForm() {
                     size="sm"
                     value={formData.sujet}
                     onChange={handleChange}
+                    required
+                    disabled={loading}
                   />
 
                   <Textarea
@@ -72,6 +139,8 @@ export default function ContactForm() {
                     minRows={6}
                     value={formData.message}
                     onChange={handleChange}
+                    required
+                    disabled={loading}
                   />
 
                   <Button
@@ -80,6 +149,7 @@ export default function ContactForm() {
                     variant="gradient"
                     gradient={{ from: 'shopOrange.5', to: 'neutral.7', deg: 120 }}
                     style={{ alignSelf: 'flex-start' }}
+                    loading={loading}
                   >
                     Envoyer votre message
                   </Button>

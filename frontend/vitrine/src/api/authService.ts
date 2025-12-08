@@ -13,6 +13,12 @@ export interface UserData {
   siret?: string;
   address?: string;
 }
+export interface MessageData{
+  name:string,
+  email:string,
+  sujet:string,
+  message:string
+}
 
 export interface LoginData {
   email: string;
@@ -174,3 +180,31 @@ export const isAdminAuthenticated = (): boolean => {
   const token = localStorage.getItem('adminToken');
   return !!token;
 };
+
+//------------------RECEPTION MESSAGE-------------
+
+
+export const message = async (messageData:MessageData):Promise<ApiResponse> =>{
+try{
+  const messagesig = {
+     name: messageData.name,
+     email:messageData.email,
+     sujet:messageData.sujet,
+     message:messageData.message
+
+    };
+  const response = await fetch (`${API_URL}/message`,
+  {
+    method:'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(messagesig)
+  }
+)
+const data:ApiResponse= await response.json()
+return data
+}
+catch (error: any) {
+    console.error(error);
+    throw error;
+  }
+}
