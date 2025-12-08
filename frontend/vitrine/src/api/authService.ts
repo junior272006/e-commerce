@@ -184,27 +184,22 @@ export const isAdminAuthenticated = (): boolean => {
 //------------------RECEPTION MESSAGE-------------
 
 
-export const message = async (messageData:MessageData):Promise<ApiResponse> =>{
-try{
-  const messagesig = {
-     name: messageData.name,
-     email:messageData.email,
-     sujet:messageData.sujet,
-     message:messageData.message
+// ------------------- ENVOI MESSAGE -------------------
+export const message = async (messageData: MessageData): Promise<ApiResponse> => {
+  try {
+    const response = await fetch(`${API_URL}/message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(messageData),
+    });
 
-    };
-  const response = await fetch (`${API_URL}/message`,
-  {
-    method:'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(messagesig)
-  }
-)
-const data:ApiResponse= await response.json()
-return data
-}
-catch (error: any) {
+    const data: ApiResponse = await response.json();
+
+    if (!response.ok) throw new Error(data.error || data.message || 'Erreur lors de l\'envoi du message');
+
+    return data;
+  } catch (error: any) {
     console.error(error);
     throw error;
   }
-}
+};
