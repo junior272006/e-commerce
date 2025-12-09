@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextInput, Textarea, Button, Container, Title, Grid, Paper, Group, Text, Stack, Notification } from '@mantine/core';
 import { IconMail, IconPhone, IconMapPin, IconCheck, IconX } from '@tabler/icons-react';
 import Header from '../components/common/Header';
+import Footer from '../components/common/Footer';
 import { message as sendMessage } from '../api/authService';  
 import type { MessageData } from '../api/authService';
 
@@ -199,6 +200,7 @@ export default function ContactForm() {
           </Grid.Col>
         </Grid>
       </Container>
+      <Footer/>
     </div>
   );
 }

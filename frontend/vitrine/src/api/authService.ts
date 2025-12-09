@@ -203,3 +203,30 @@ export const message = async (messageData: MessageData): Promise<ApiResponse> =>
     throw error;
   }
 };
+
+export const userlist= async (): Promise<any[]> =>{
+  try{
+
+ const token = localStorage.getItem('adminToken');
+    if (!token) throw new Error("Admin non connecté");
+
+
+const response = await fetch (`${API_URL}/user/liste`,
+  {
+    method:'GET',
+    headers:{ 'Content-Type': 'application/json',"Authorization": `Bearer ${token}` }
+  })
+   const data = await response.json()
+
+if (!response.ok) {
+      throw new Error(data.error || data.message || "Erreur récupération utilisateurs");
+    }
+return data
+
+}
+
+  catch  (error:any) {
+ console.error("Erreur getUsers:", error);
+    throw error;
+  }
+}

@@ -83,3 +83,10 @@ exports.getUser = (req, res, next) => {
     res.status(500).json({ message: 'Erreur serveur', error: error.message });
   }
 };
+
+exports.UserList = (req, res,next) => {
+  User.find()
+    .select("-password -__v")   // retire le hash et les champs inutiles
+    .then((users) => res.status(200).json(users))
+    .catch((error) => res.status(500).json({ message: "Erreur serveur", error }));
+};
