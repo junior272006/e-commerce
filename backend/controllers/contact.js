@@ -20,3 +20,20 @@ exports.CreateMessage = async (req, res) => {
     });
   }
 };
+
+
+exports.MessageList= async (req,res,next) =>{
+  try{
+const contacts= await Contact.find()
+.lean()
+res.status(200).json(contacts)
+  }
+
+  catch (error) {
+ console.error("Erreur UserList:", error);
+    res.status(500).json({ 
+      message: "Erreur lors de la récupération des utilisateurs", 
+      error: error.message 
+    });
+  }
+}

@@ -17,6 +17,18 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+
+// backend/routes ou dans votre fichier principal (server.js/app.js)
+
+// Endpoint de santé pour réveiller le serveur
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.use(express.json());
 app.use('/api', UserRoute);
 app.use('/api',AdminRoute)

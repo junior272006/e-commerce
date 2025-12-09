@@ -1,4 +1,6 @@
 // frontend/src/api/authService.ts
+import { fetchWithTimeout } from './fetchHelper';
+
 const API_URL = 'https://e-commerce-3-clba.onrender.com/api';
 
 // ------------------- TYPES -------------------
@@ -13,11 +15,13 @@ export interface UserData {
   siret?: string;
   address?: string;
 }
-export interface MessageData{
-  name:string,
-  email:string,
-  sujet:string,
-  message:string
+
+export interface MessageData {
+  _id?:string;
+  name: string;
+  email: string;
+  sujet: string;
+  message: string;
 }
 
 export interface LoginData {
@@ -35,6 +39,21 @@ export interface ApiResponse {
   email?: string;
 }
 
+// ------------------- WAKE UP SERVER -------------------
+export const wakeUpServer = async (): Promise<boolean> => {
+  try {
+    const response = await fetchWithTimeout(
+      `${API_URL}/health`,
+      { method: 'GET' },
+      10000 // 10 secondes seulement pour le health check
+    );
+    return response.ok;
+  } catch (error) {
+    console.warn('⏳ Serveur en démarrage...');
+    return false;
+  }
+};
+
 // ------------------- INSCRIPTION USER -------------------
 export const registerUser = async (userData: UserData): Promise<ApiResponse> => {
   try {
@@ -47,11 +66,14 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
       confirmPassword: userData.confirmPassword,
     };
 
-    const response = await fetch(`${API_URL}/user/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(datasig)
-    });
+    const response = await fetchWithTimeout(
+      `${API_URL}/user/signup`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datasig)
+      }
+    );
 
     const data: ApiResponse = await response.json();
 
@@ -61,7 +83,7 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
 
     return data;
   } catch (error: any) {
-    console.error(error);
+    console.error('❌ Erreur registerUser:', error);
     throw error;
   }
 };
@@ -69,11 +91,14 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
 // ------------------- LOGIN USER -------------------
 export const loginUser = async (loginData: LoginData): Promise<ApiResponse> => {
   try {
-    const response = await fetch(`${API_URL}/user/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginData)
-    });
+    const response = await fetchWithTimeout(
+      `${API_URL}/user/login`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData)
+      }
+    );
 
     const data: ApiResponse = await response.json();
 
@@ -84,14 +109,13 @@ export const loginUser = async (loginData: LoginData): Promise<ApiResponse> => {
     // Stockage du token utilisateur
     if (data.token) {
       localStorage.setItem('userToken', data.token);
-      // Optionnel : stocker aussi l'id et l'email
       if (data.id) localStorage.setItem('userId', data.id);
       if (data.email) localStorage.setItem('userEmail', data.email);
     }
 
     return data;
   } catch (error: any) {
-    console.error(error);
+    console.error(' Erreur loginUser:', error);
     throw error;
   }
 };
@@ -102,10 +126,13 @@ export const getUser = async (): Promise<ApiResponse> => {
     const token = localStorage.getItem('userToken');
     if (!token) throw new Error('Utilisateur non connecté');
 
-    const response = await fetch(`${API_URL}/user/me`, {
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await fetchWithTimeout(
+      `${API_URL}/user/me`,
+      {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      }
+    );
 
     const data: ApiResponse = await response.json();
 
@@ -115,7 +142,7 @@ export const getUser = async (): Promise<ApiResponse> => {
 
     return data;
   } catch (error: any) {
-    console.error(error);
+    console.error(' Erreur getUser:', error);
     throw error;
   }
 };
@@ -129,11 +156,14 @@ export const isUserAuthenticated = (): boolean => {
 // ------------------- LOGIN ADMIN -------------------
 export const loginAdmin = async (loginData: LoginData): Promise<ApiResponse> => {
   try {
-    const response = await fetch(`${API_URL}/admin/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginData)
-    });
+    const response = await fetchWithTimeout(
+      `${API_URL}/admin/login`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData)
+      }
+    );
 
     const data: ApiResponse = await response.json();
 
@@ -146,7 +176,7 @@ export const loginAdmin = async (loginData: LoginData): Promise<ApiResponse> => 
 
     return data;
   } catch (error: any) {
-    console.error(error);
+    console.error(' Erreur loginAdmin:', error);
     throw error;
   }
 };
@@ -157,10 +187,13 @@ export const getAdmin = async (): Promise<ApiResponse> => {
     const token = localStorage.getItem('adminToken');
     if (!token) throw new Error('Admin non connecté');
 
-    const response = await fetch(`${API_URL}/admin/me`, {
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await fetchWithTimeout(
+      `${API_URL}/admin/me`,
+      {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      }
+    );
 
     const data: ApiResponse = await response.json();
 
@@ -170,7 +203,7 @@ export const getAdmin = async (): Promise<ApiResponse> => {
 
     return data;
   } catch (error: any) {
-    console.error(error);
+    console.error(' Erreur getAdmin:', error);
     throw error;
   }
 };
@@ -181,52 +214,88 @@ export const isAdminAuthenticated = (): boolean => {
   return !!token;
 };
 
-//------------------RECEPTION MESSAGE-------------
-
-
 // ------------------- ENVOI MESSAGE -------------------
 export const message = async (messageData: MessageData): Promise<ApiResponse> => {
   try {
-    const response = await fetch(`${API_URL}/message`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(messageData),
-    });
+    const response = await fetchWithTimeout(
+      `${API_URL}/message`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(messageData),
+      }
+    );
 
     const data: ApiResponse = await response.json();
 
-    if (!response.ok) throw new Error(data.error || data.message || 'Erreur lors de l\'envoi du message');
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'Erreur lors de l\'envoi du message');
+    }
 
     return data;
   } catch (error: any) {
-    console.error(error);
+    console.error(' Erreur message:', error);
     throw error;
   }
 };
 
-export const userlist= async (): Promise<any[]> =>{
-  try{
-
- const token = localStorage.getItem('adminToken');
+// ------------------- LISTE UTILISATEURS -------------------
+export const userlist = async (): Promise<any[]> => {
+  try {
+    const token = localStorage.getItem('adminToken');
     if (!token) throw new Error("Admin non connecté");
 
+    const response = await fetchWithTimeout(
+      `${API_URL}/user/liste`,
+      {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        }
+      }
+    );
 
-const response = await fetch (`${API_URL}/user/liste`,
-  {
-    method:'GET',
-    headers:{ 'Content-Type': 'application/json',"Authorization": `Bearer ${token}` }
-  })
-   const data = await response.json()
-
-if (!response.ok) {
+    if (!response.ok) {
+      const data = await response.json();
       throw new Error(data.error || data.message || "Erreur récupération utilisateurs");
     }
-return data
 
-}
+    const data = await response.json();
+    return data;
 
-  catch  (error:any) {
- console.error("Erreur getUsers:", error);
+  } catch (error: any) {
+    console.error(' Erreur userlist:', error);
     throw error;
   }
+};
+
+export const usermessage= async ():Promise<MessageData[]> =>{
+try{
+
+    const token = localStorage.getItem('adminToken');
+    if (!token) throw new Error("Admin non connecté");
+ const response= await fetchWithTimeout (`${API_URL}/message/liste`,
+       {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}` 
+        }
+      }
+  )
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || data.message || "Erreur récupération utilisateurs");
+    }
+
+    const data = await response.json();
+    return data;
+}
+catch (error:any){
+ console.error(' Erreur userlist:', error);
+    throw error;
+}
+
 }

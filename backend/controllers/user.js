@@ -84,9 +84,18 @@ exports.getUser = (req, res, next) => {
   }
 };
 
-exports.UserList = (req, res,next) => {
-  User.find()
-    .select("-password -__v")   // retire le hash et les champs inutiles
-    .then((users) => res.status(200).json(users))
-    .catch((error) => res.status(500).json({ message: "Erreur serveur", error }));
+exports.UserList = async (req, res, next) => {
+  try {
+    const users = await User.find()
+      .select("-password -__v")
+      .lean(); // Améliore les performances en retournant des objets JS purs
+    
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Erreur UserList:", error);
+    res.status(500).json({ 
+      message: "Erreur lors de la récupération des utilisateurs", 
+      error: error.message 
+    });
+  }
 };
