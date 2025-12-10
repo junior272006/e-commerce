@@ -280,33 +280,32 @@ export const userlist = async (): Promise<any[]> => {
   }
 };
 
-export const usermessage= async ():Promise<MessageData[]> =>{
-try{
-
-   
- const response= await fetchWithTimeout (`${API_URL}/message/liste`,
-       {
-        method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',  
-        }
-      }
-  )
+export const usermessage = async (): Promise<MessageData[]> => {
+  try {
+    const url = `${API_URL}/messages`;
+    console.log('📍 URL appelée:', url);
+    console.log('📍 API_URL:', API_URL); // <- Ajoute ça pour voir
+    
+    const response = await fetchWithTimeout(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
       const data = await response.json();
-      throw new Error(data.error || data.message || "Erreur récupération utilisateurs");
+      throw new Error(data.error || data.message || "Erreur récupération messages");
     }
 
-    const data = await response.json();
+    const data: MessageData[] = await response.json();
     return data;
-}
-catch (error:any){
- console.error(' Erreur userlist:', error);
+  } catch (error: any) {
+    console.error('❌ Erreur usermessage:', error);
     throw error;
-}
+  }
+};
 
-}
 
 //------------ENREGISTREMENT PRODUIT-----------------
 
