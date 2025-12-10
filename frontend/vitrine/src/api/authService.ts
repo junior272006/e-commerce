@@ -24,6 +24,15 @@ export interface MessageData {
   message: string;
 }
 
+export interface ProductData {
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  images: File[];  
+}
+
 export interface LoginData {
   email: string;
   password: string;
@@ -37,6 +46,7 @@ export interface ApiResponse {
   admin?: any;
   id?: string;
   email?: string;
+   product?: any; 
 }
 
 // ------------------- WAKE UP SERVER -------------------
@@ -83,7 +93,7 @@ export const registerUser = async (userData: UserData): Promise<ApiResponse> => 
 
     return data;
   } catch (error: any) {
-    console.error('❌ Erreur registerUser:', error);
+    console.error(' Erreur registerUser:', error);
     throw error;
   }
 };
@@ -273,14 +283,12 @@ export const userlist = async (): Promise<any[]> => {
 export const usermessage= async ():Promise<MessageData[]> =>{
 try{
 
-    const token = localStorage.getItem('adminToken');
-    if (!token) throw new Error("Admin non connecté");
+   
  const response= await fetchWithTimeout (`${API_URL}/message/liste`,
        {
         method: 'GET',
         headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${token}` 
+          'Content-Type': 'application/json',  
         }
       }
   )
@@ -298,4 +306,40 @@ catch (error:any){
     throw error;
 }
 
+}
+
+//------------ENREGISTREMENT PRODUIT-----------------
+
+
+export const createproduct = async (productData: ProductData): Promise<ApiResponse> => {
+  try {
+    const formData = new FormData();
+    
+    formData.append('title', productData.title);
+    formData.append('description', productData.description);
+    formData.append('price', productData.price.toString());
+    formData.append('category', productData.category);
+    formData.append('stock', productData.stock.toString());
+    
+    // Ajouter les fichiers images
+    productData.images.forEach((file) => {
+      formData.append('images', file);
+    });
+
+    const response = await fetchWithTimeout(`${API_URL}/product`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data: ApiResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'Erreur création produit');
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error('Erreur product:', error);
+    throw error;
+  }
 }

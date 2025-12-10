@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   IconHome,
   IconShoppingBag,
@@ -10,9 +10,13 @@ import {
   IconPlus,
   IconLoader,
   IconAlertCircle,
+  IconX,
+  IconUpload,
+  IconTrash,
+  IconEdit,
 } from "@tabler/icons-react";
-import { userlist, usermessage } from "../../api/authService";
-import type { MessageData } from "../../api/authService";
+import { userlist, usermessage, createproduct } from "../../api/authService";
+import type { MessageData, ProductData } from "../../api/authService";
 
 interface User {
   _id: string;
@@ -22,13 +26,37 @@ interface User {
   phone: string;
 }
 
+interface Product {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  images: string[];
+  createdAt: string;
+}
 
 export default function AdminDashboard() {
   const [active, setActive] = useState("Dashboard");
   const [users, setUsers] = useState<User[]>([]);
   const [messages, setMessages] = useState<MessageData[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+
+  // État du formulaire
+  const [productForm, setProductForm] = useState({
+    title: "",
+    description: "",
+    price: 0,
+    category: "",
+    stock: 0,
+  });
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const menu = [
     { label: "Dashboard", icon: IconHome },
@@ -38,7 +66,14 @@ export default function AdminDashboard() {
     { label: "Messages", icon: IconMessage },
   ];
 
-  // Charger les données selon la section active
+  const categories = [
+    { value: "electronics", label: "Électronique" },
+    { value: "clothing", label: "Vêtements" },
+    { value: "food", label: "Alimentation" },
+    { value: "books", label: "Livres" },
+    { value: "other", label: "Autre" },
+  ];
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -49,8 +84,8 @@ export default function AdminDashboard() {
           const data = await userlist();
           setUsers(data);
         } else if (active === "Messages") {
-         const data = await usermessage();
-setMessages(data);
+          const data = await usermessage();
+          setMessages(data);
         }
       } catch (err: any) {
         setError(err.message || "Erreur lors du chargement des données");
@@ -64,6 +99,80 @@ setMessages(data);
       loadData();
     }
   }, [active]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      if (files.length + selectedFiles.length > 5) {
+        alert("Maximum 5 images autorisées");
+        return;
+      }
+
+      setSelectedFiles((prev) => [...prev, ...files]);
+
+      // Créer les previews
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!productForm.title || !productForm.description || !productForm.category) {
+      alert("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+
+    if (selectedFiles.length === 0) {
+      alert("Veuillez ajouter au moins une image");
+      return;
+    }
+
+    setFormLoading(true);
+
+    try {
+      const productData: ProductData = {
+        ...productForm,
+        images: selectedFiles,
+      };
+
+      const result = await createproduct(productData);
+      
+      // Ajouter le nouveau produit à la liste
+      if (result.product) {
+        setProducts((prev) => [result.product, ...prev]);
+      }
+
+      // Réinitialiser le formulaire
+      setProductForm({
+        title: "",
+        description: "",
+        price: 0,
+        category: "",
+        stock: 0,
+      });
+      setSelectedFiles([]);
+      setPreviewUrls([]);
+      setShowProductForm(false);
+      
+      alert("Produit créé avec succès !");
+    } catch (err: any) {
+      alert("Erreur: " + err.message);
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -184,7 +293,7 @@ setMessages(data);
           >
             {[
               { label: "Total Clients", value: users.length, icon: IconUsers },
-              { label: "Total Produits", value: "0", icon: IconShoppingBag },
+              { label: "Total Produits", value: products.length, icon: IconShoppingBag },
               { label: "Messages", value: messages.length, icon: IconMessage },
               { label: "Ventes", value: "0 €", icon: IconChartBar },
             ].map((stat, i) => (
@@ -235,6 +344,7 @@ setMessages(data);
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => setShowProductForm(true)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -252,15 +362,89 @@ setMessages(data);
               </motion.button>
             </div>
 
+            {/* Liste des produits */}
             <div
               style={{
-                textAlign: "center",
-                opacity: 0.8,
-                fontSize: "1.2rem",
-                padding: "4rem",
+                background: "rgba(255,255,255,0.15)",
+                padding: "1.5rem",
+                borderRadius: "12px",
+                backdropFilter: "blur(10px)",
               }}
             >
-              Les produits s'afficheront ici...
+              <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem" }}>
+                Liste des produits ({products.length})
+              </h2>
+
+              {products.length === 0 ? (
+                <p style={{ textAlign: "center", padding: "2rem", opacity: 0.8 }}>
+                  Aucun produit ajouté
+                </p>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                    }}
+                  >
+                    <thead>
+                      <tr
+                        style={{
+                          textAlign: "left",
+                          borderBottom: "2px solid rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        <th style={{ padding: "1rem" }}>Image</th>
+                        <th style={{ padding: "1rem" }}>Titre</th>
+                        <th style={{ padding: "1rem" }}>Prix</th>
+                        <th style={{ padding: "1rem" }}>Catégorie</th>
+                        <th style={{ padding: "1rem" }}>Stock</th>
+                        <th style={{ padding: "1rem" }}>Actions</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {products.map((product) => (
+                        <tr
+                          key={product._id}
+                          style={{
+                            borderBottom: "1px solid rgba(255,255,255,0.1)",
+                          }}
+                        >
+                          <td style={{ padding: "1rem" }}>
+                            <img
+                              src={product.images[0]}
+                              alt={product.title}
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </td>
+                          <td style={{ padding: "1rem" }}>{product.title}</td>
+                          <td style={{ padding: "1rem" }}>{product.price} FCFA</td>
+                          <td style={{ padding: "1rem" }}>{product.category}</td>
+                          <td style={{ padding: "1rem" }}>{product.stock}</td>
+                          <td style={{ padding: "1rem" }}>
+                            <div style={{ display: "flex", gap: "0.5rem" }}>
+                              <IconEdit
+                                size={20}
+                                style={{ cursor: "pointer", opacity: 0.8 }}
+                              />
+                              <IconTrash
+                                size={20}
+                                style={{ cursor: "pointer", opacity: 0.8, color: "#ff6b6b" }}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -386,7 +570,7 @@ setMessages(data);
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {messages.map((msg) => (
                   <motion.div
-                   key={msg._id}
+                    key={msg._id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     style={{
@@ -411,7 +595,6 @@ setMessages(data);
                           {msg.email}
                         </div>
                       </div>
-                     
                     </div>
                     <div
                       style={{
@@ -446,6 +629,269 @@ setMessages(data);
           </div>
         )}
       </main>
+
+      {/* MODAL FORMULAIRE PRODUIT */}
+      <AnimatePresence>
+        {showProductForm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(0,0,0,0.7)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+              padding: "2rem",
+            }}
+            onClick={() => setShowProductForm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "white",
+                borderRadius: "16px",
+                padding: "2rem",
+                maxWidth: "600px",
+                width: "100%",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                color: "#333",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                  Ajouter un produit
+                </h2>
+                <IconX
+                  size={24}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowProductForm(false)}
+                />
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                    Titre *
+                  </label>
+                  <input
+                    type="text"
+                    value={productForm.title}
+                    onChange={(e) => setProductForm({ ...productForm, title: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                    Description *
+                  </label>
+                  <textarea
+                    value={productForm.description}
+                    onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                    rows={4}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                      resize: "vertical",
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                      Prix (FCFA) *
+                    </label>
+                    <input
+                      type="number"
+                      value={productForm.price}
+                      onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
+                      style={{
+                        width: "100%",
+                        padding: "0.75rem",
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        fontSize: "1rem",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                      Stock
+                    </label>
+                    <input
+                      type="number"
+                      value={productForm.stock}
+                      onChange={(e) => setProductForm({ ...productForm, stock: Number(e.target.value) })}
+                      style={{
+                        width: "100%",
+                        padding: "0.75rem",
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        fontSize: "1rem",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                    Catégorie *
+                  </label>
+                  <select
+                    value={productForm.category}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    <option value="">Sélectionner une catégorie</option>
+                    {categories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                    Images (max 5) *
+                  </label>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      padding: "2rem",
+                      border: "2px dashed #ddd",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      background: "#f9f9f9",
+                    }}
+                  >
+                    <IconUpload size={24} />
+                    <span>Cliquez pour sélectionner des images</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+
+                  {previewUrls.length > 0 && (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+                        gap: "0.5rem",
+                        marginTop: "1rem",
+                      }}
+                    >
+                      {previewUrls.map((url, index) => (
+                        <div key={index} style={{ position: "relative" }}>
+                          <img
+                            src={url}
+                            alt={`Preview ${index}`}
+                            style={{
+                              width: "100%",
+                              height: "100px",
+                              objectFit: "cover",
+                              borderRadius: "8px",
+                            }}
+                          />
+                          <IconX
+                            size={20}
+                            style={{
+                              position: "absolute",
+                              top: "5px",
+                              right: "5px",
+                              background: "white",
+                              borderRadius: "50%",
+                              cursor: "pointer",
+                              padding: "2px",
+                            }}
+                            onClick={() => removeImage(index)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                  <button
+                    onClick={() => setShowProductForm(false)}
+                    style={{
+                      flex: 1,
+                      padding: "0.875rem",
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      background: "white",
+                      cursor: "pointer",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={handleSubmitProduct}
+                    disabled={formLoading}
+                    style={{
+                      flex: 1,
+                      padding: "0.875rem",
+                      border: "none",
+                      borderRadius: "8px",
+                      background: "#FF7F00",
+                      color: "white",
+                      cursor: formLoading ? "not-allowed" : "pointer",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {formLoading ? "Création..." : "Créer le produit"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style>
         {`
