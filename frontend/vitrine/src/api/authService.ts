@@ -282,11 +282,7 @@ export const userlist = async (): Promise<any[]> => {
 
 export const usermessage = async (): Promise<MessageData[]> => {
   try {
-    const url = `${API_URL}/messages`;
-    console.log('📍 URL appelée:', url);
-    console.log('📍 API_URL:', API_URL); // <- Ajoute ça pour voir
-    
-    const response = await fetchWithTimeout(url, {
+    const response = await fetchWithTimeout(`${API_URL}/messages`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -301,12 +297,10 @@ export const usermessage = async (): Promise<MessageData[]> => {
     const data: MessageData[] = await response.json();
     return data;
   } catch (error: any) {
-    console.error('❌ Erreur usermessage:', error);
+    console.error(' Erreur usermessage:', error);
     throw error;
   }
 };
-
-
 //------------ENREGISTREMENT PRODUIT-----------------
 
 
