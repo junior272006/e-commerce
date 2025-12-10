@@ -46,7 +46,7 @@ export interface ApiResponse {
   admin?: any;
   id?: string;
   email?: string;
-   product?: any; 
+  product:string
 }
 
 // ------------------- WAKE UP SERVER -------------------

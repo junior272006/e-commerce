@@ -47,7 +47,6 @@ export default function AdminDashboard() {
   const [showProductForm, setShowProductForm] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
 
-  // État du formulaire
   const [productForm, setProductForm] = useState({
     title: "",
     description: "",
@@ -110,7 +109,6 @@ export default function AdminDashboard() {
 
       setSelectedFiles((prev) => [...prev, ...files]);
 
-      // Créer les previews
       files.forEach((file) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -149,12 +147,16 @@ export default function AdminDashboard() {
 
       const result = await createproduct(productData);
       
-      // Ajouter le nouveau produit à la liste
-      if (result.product) {
-        setProducts((prev) => [result.product, ...prev]);
-      }
+      // Construire le nouvel objet produit avec l'ID retourné
+      const newProduct: Product = {
+        _id: result.product,
+        ...productForm,
+        images: previewUrls,
+        createdAt: new Date().toISOString(),
+      };
+      
+      setProducts((prev) => [newProduct, ...prev]);
 
-      // Réinitialiser le formulaire
       setProductForm({
         title: "",
         description: "",
@@ -188,7 +190,6 @@ export default function AdminDashboard() {
         fontFamily: "Work Sans, sans-serif",
       }}
     >
-      {/* SIDEBAR */}
       <aside
         style={{
           width: "260px",
@@ -261,7 +262,6 @@ export default function AdminDashboard() {
         </motion.div>
       </aside>
 
-      {/* MAIN */}
       <main
         style={{
           flex: 1,
@@ -282,7 +282,6 @@ export default function AdminDashboard() {
           {active}
         </motion.h1>
 
-        {/* DASHBOARD */}
         {active === "Dashboard" && (
           <div
             style={{
@@ -331,7 +330,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* PRODUITS */}
         {active === "Produits" && (
           <>
             <div
@@ -362,7 +360,6 @@ export default function AdminDashboard() {
               </motion.button>
             </div>
 
-            {/* Liste des produits */}
             <div
               style={{
                 background: "rgba(255,255,255,0.15)",
@@ -375,7 +372,12 @@ export default function AdminDashboard() {
                 Liste des produits ({products.length})
               </h2>
 
-              {products.length === 0 ? (
+              {loading ? (
+                <div style={{ textAlign: "center", padding: "2rem" }}>
+                  <IconLoader size={40} style={{ animation: "spin 1s linear infinite" }} />
+                  <p style={{ marginTop: "1rem" }}>Chargement...</p>
+                </div>
+              ) : products.length === 0 ? (
                 <p style={{ textAlign: "center", padding: "2rem", opacity: 0.8 }}>
                   Aucun produit ajouté
                 </p>
@@ -449,7 +451,6 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* CLIENTS */}
         {active === "Clients" && (
           <div
             style={{
@@ -529,7 +530,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* MESSAGES */}
         {active === "Messages" && (
           <div
             style={{
@@ -615,7 +615,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* STATISTIQUES */}
         {active === "Statistiques" && (
           <div
             style={{
@@ -630,7 +629,6 @@ export default function AdminDashboard() {
         )}
       </main>
 
-      {/* MODAL FORMULAIRE PRODUIT */}
       <AnimatePresence>
         {showProductForm && (
           <motion.div
