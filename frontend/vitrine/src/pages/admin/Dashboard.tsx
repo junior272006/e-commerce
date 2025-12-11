@@ -15,8 +15,11 @@ import {
   IconTrash,
   IconEdit,
 } from "@tabler/icons-react";
-import { userlist, usermessage, createproduct } from "../../api/authService";
+import { userlist, usermessage, createproduct, productlist } from "../../api/authService";
 import type { MessageData, ProductData } from "../../api/authService";
+
+// URL de base de votre API
+const API_BASE_URL = "https://e-commerce-3-clba.onrender.com";
 
 interface User {
   _id: string;
@@ -85,6 +88,9 @@ export default function AdminDashboard() {
         } else if (active === "Messages") {
           const data = await usermessage();
           setMessages(data);
+        } else if (active === "Produits") {
+          const data = await productlist();
+          setProducts(data);
         }
       } catch (err: any) {
         setError(err.message || "Erreur lors du chargement des données");
@@ -94,7 +100,7 @@ export default function AdminDashboard() {
       }
     };
 
-    if (active === "Clients" || active === "Messages") {
+    if (active === "Clients" || active === "Messages" || active === "Produits") {
       loadData();
     }
   }, [active]);
@@ -145,17 +151,11 @@ export default function AdminDashboard() {
         images: selectedFiles,
       };
 
-      const result = await createproduct(productData);
+      await createproduct(productData);
       
-      // Construire le nouvel objet produit avec l'ID retourné
-      const newProduct: Product = {
-        _id: result.product,
-        ...productForm,
-        images: previewUrls,
-        createdAt: new Date().toISOString(),
-      };
-      
-      setProducts((prev) => [newProduct, ...prev]);
+      // Recharger la liste des produits après création
+      const updatedProducts = await productlist();
+      setProducts(updatedProducts);
 
       setProductForm({
         title: "",
@@ -377,6 +377,20 @@ export default function AdminDashboard() {
                   <IconLoader size={40} style={{ animation: "spin 1s linear infinite" }} />
                   <p style={{ marginTop: "1rem" }}>Chargement...</p>
                 </div>
+              ) : error ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                    padding: "1rem",
+                    background: "rgba(255,0,0,0.2)",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <IconAlertCircle size={24} />
+                  <span>{error}</span>
+                </div>
               ) : products.length === 0 ? (
                 <p style={{ textAlign: "center", padding: "2rem", opacity: 0.8 }}>
                   Aucun produit ajouté
@@ -415,8 +429,13 @@ export default function AdminDashboard() {
                         >
                           <td style={{ padding: "1rem" }}>
                             <img
-                              src={product.images[0]}
+                              src={product.images[0]?.startsWith('http') 
+                                ? product.images[0] 
+                                : `${API_BASE_URL}${product.images[0]}`}
                               alt={product.title}
+                              onError={(e) => {
+                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect fill="%23ddd" width="50" height="50"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EImg%3C/text%3E%3C/svg%3E';
+                              }}
                               style={{
                                 width: "50px",
                                 height: "50px",
