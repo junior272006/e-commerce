@@ -336,3 +336,28 @@ export const createproduct = async (productData: ProductData): Promise<ApiRespon
     throw error;
   }
 }
+
+
+export const productlist = async (): Promise<any[]> => {
+  try{
+const response= await fetchWithTimeout (`${API_URL}/product/liste`,
+  {
+    method:'GET',
+    headers: {
+        'Content-Type': 'application/json',
+      },
+  }
+)
+
+    const data = await response.json();
+     if (!response.ok) {
+      throw new Error(data.error || data.message || "Erreur récupération produits");
+    }
+    return data;
+  }
+
+catch (error:any){
+ console.error(' Erreur productlist:', error);
+    throw error;
+}
+}

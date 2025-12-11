@@ -64,3 +64,24 @@ exports.CreateProduct = async (req, res) => {
     });
   }
 };
+
+
+exports.getproduct= async (req,res,next) => {
+
+try{
+
+  const products= await Product.find()
+  .lean()
+  res.status(200).json(products)
+
+}
+
+
+catch (error){
+ console.error("Erreur ProductList:", error);
+    res.status(500).json({ 
+      message: "Erreur lors de la récupération des produits", 
+      error: error.message 
+    });
+}
+}
