@@ -3,25 +3,22 @@ const Product = require('../models/product');
 
 exports.createProduct = async (req, res) => {
   try {
-    console.log("BODY :", req.body);
-    console.log("FILES :", req.files);
-
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Aucune image envoyée"
+        message: "Aucune image reçue"
       });
     }
 
-    const images = req.files.map(file => file.path); // Cloudinary URL
+    const images = req.files.map(file => file.path);
 
     const product = new Product({
       title: req.body.title,
       description: req.body.description,
-      price: req.body.price,
+      price: Number(req.body.price),
       category: req.body.category,
-      stock: req.body.stock,
-      images: images
+      stock: Number(req.body.stock || 0),
+      images
     });
 
     await product.save();
@@ -33,17 +30,13 @@ exports.createProduct = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("ERREUR CREATE PRODUCT :", error);
-
+    console.error(error);
     res.status(500).json({
       success: false,
-      message: "Erreur serveur",
-      error: error.message
+      message: error.message
     });
   }
 };
-
-
 
 exports.getproduct = async (req, res) => {
   try {
