@@ -18,7 +18,6 @@ import {
 import { userlist, usermessage, createproduct, productlist } from "../../api/authService";
 import type { MessageData, ProductData } from "../../api/authService";
 
-// URL de base de votre API
 const API_BASE_URL = "https://e-commerce-3-clba.onrender.com";
 
 interface User {
@@ -82,7 +81,16 @@ export default function AdminDashboard() {
       setError("");
 
       try {
-        if (active === "Clients") {
+        if (active === "Dashboard") {
+          const [usersData, messagesData, productsData] = await Promise.all([
+            userlist().catch(() => []),
+            usermessage().catch(() => []),
+            productlist().catch(() => [])
+          ]);
+          setUsers(usersData);
+          setMessages(messagesData);
+          setProducts(productsData);
+        } else if (active === "Clients") {
           const data = await userlist();
           setUsers(data);
         } else if (active === "Messages") {
@@ -100,7 +108,7 @@ export default function AdminDashboard() {
       }
     };
 
-    if (active === "Clients" || active === "Messages" || active === "Produits") {
+    if (active === "Dashboard" || active === "Clients" || active === "Messages" || active === "Produits") {
       loadData();
     }
   }, [active]);
@@ -108,8 +116,23 @@ export default function AdminDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
+      
       if (files.length + selectedFiles.length > 5) {
         alert("Maximum 5 images autorisées");
+        return;
+      }
+
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const invalidFiles = files.filter(file => !validTypes.includes(file.type));
+      
+      if (invalidFiles.length > 0) {
+        alert("Seuls les formats JPG, JPEG, PNG et WEBP sont acceptés");
+        return;
+      }
+
+      const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
+      if (oversizedFiles.length > 0) {
+        alert(`Ces images dépassent 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
         return;
       }
 
@@ -119,6 +142,9 @@ export default function AdminDashboard() {
         const reader = new FileReader();
         reader.onloadend = () => {
           setPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.onerror = () => {
+          console.error('Erreur lecture fichier:', file.name);
         };
         reader.readAsDataURL(file);
       });
@@ -133,7 +159,17 @@ export default function AdminDashboard() {
   const handleSubmitProduct = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!productForm.title || !productForm.description || !productForm.category) {
+    if (productForm.price <= 0) {
+      alert("Le prix doit être supérieur à 0");
+      return;
+    }
+
+    if (productForm.stock < 0) {
+      alert("Le stock ne peut pas être négatif");
+      return;
+    }
+
+    if (!productForm.title.trim() || !productForm.description.trim() || !productForm.category) {
       alert("Veuillez remplir tous les champs obligatoires");
       return;
     }
@@ -151,9 +187,9 @@ export default function AdminDashboard() {
         images: selectedFiles,
       };
 
+      console.log('Création produit:', productData);
       await createproduct(productData);
       
-      // Recharger la liste des produits après création
       const updatedProducts = await productlist();
       setProducts(updatedProducts);
 
@@ -168,9 +204,10 @@ export default function AdminDashboard() {
       setPreviewUrls([]);
       setShowProductForm(false);
       
-      alert("Produit créé avec succès !");
+      alert("Produit créé avec succès!");
     } catch (err: any) {
-      alert("Erreur: " + err.message);
+      console.error('Erreur création:', err);
+      alert("Erreur: " + (err.message || "Impossible de créer le produit"));
     } finally {
       setFormLoading(false);
     }
@@ -294,7 +331,7 @@ export default function AdminDashboard() {
               { label: "Total Clients", value: users.length, icon: IconUsers },
               { label: "Total Produits", value: products.length, icon: IconShoppingBag },
               { label: "Messages", value: messages.length, icon: IconMessage },
-              { label: "Ventes", value: "0 €", icon: IconChartBar },
+              { label: "Ventes", value: "0 FCFA", icon: IconChartBar },
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -420,48 +457,55 @@ export default function AdminDashboard() {
                     </thead>
 
                     <tbody>
-                      {products.map((product) => (
-                        <tr
-                          key={product._id}
-                          style={{
-                            borderBottom: "1px solid rgba(255,255,255,0.1)",
-                          }}
-                        >
-                          <td style={{ padding: "1rem" }}>
-                            <img
-                              src={product.images[0]?.startsWith('http') 
-                                ? product.images[0] 
-                                : `${API_BASE_URL}${product.images[0]}`}
-                              alt={product.title}
-                              onError={(e) => {
-                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect fill="%23ddd" width="50" height="50"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EImg%3C/text%3E%3C/svg%3E';
-                              }}
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "cover",
-                                borderRadius: "8px",
-                              }}
-                            />
-                          </td>
-                          <td style={{ padding: "1rem" }}>{product.title}</td>
-                          <td style={{ padding: "1rem" }}>{product.price} FCFA</td>
-                          <td style={{ padding: "1rem" }}>{product.category}</td>
-                          <td style={{ padding: "1rem" }}>{product.stock}</td>
-                          <td style={{ padding: "1rem" }}>
-                            <div style={{ display: "flex", gap: "0.5rem" }}>
-                              <IconEdit
-                                size={20}
-                                style={{ cursor: "pointer", opacity: 0.8 }}
+                      {products.map((product) => {
+                        const imageUrl = product.images[0];
+                        const finalUrl = imageUrl?.startsWith('http') 
+                          ? imageUrl 
+                          : `${API_BASE_URL}${imageUrl}`;
+                        
+                        return (
+                          <tr
+                            key={product._id}
+                            style={{
+                              borderBottom: "1px solid rgba(255,255,255,0.1)",
+                            }}
+                          >
+                            <td style={{ padding: "1rem" }}>
+                              <img
+                                src={finalUrl}
+                                alt={product.title}
+                                onError={(e) => {
+                                  console.error('Erreur chargement image:', finalUrl);
+                                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect fill="%23ddd" width="50" height="50"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EImg%3C/text%3E%3C/svg%3E';
+                                }}
+                                style={{
+                                  width: "50px",
+                                  height: "50px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                  border: "1px solid rgba(255,255,255,0.2)"
+                                }}
                               />
-                              <IconTrash
-                                size={20}
-                                style={{ cursor: "pointer", opacity: 0.8, color: "#ff6b6b" }}
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td style={{ padding: "1rem" }}>{product.title}</td>
+                            <td style={{ padding: "1rem" }}>{product.price} FCFA</td>
+                            <td style={{ padding: "1rem" }}>{product.category}</td>
+                            <td style={{ padding: "1rem" }}>{product.stock}</td>
+                            <td style={{ padding: "1rem" }}>
+                              <div style={{ display: "flex", gap: "0.5rem" }}>
+                                <IconEdit
+                                  size={20}
+                                  style={{ cursor: "pointer", opacity: 0.8 }}
+                                />
+                                <IconTrash
+                                  size={20}
+                                  style={{ cursor: "pointer", opacity: 0.8, color: "#ff6b6b" }}
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -703,7 +747,7 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <form onSubmit={handleSubmitProduct} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
                     Titre *
@@ -719,6 +763,7 @@ export default function AdminDashboard() {
                       borderRadius: "8px",
                       fontSize: "1rem",
                     }}
+                    required
                   />
                 </div>
 
@@ -738,6 +783,7 @@ export default function AdminDashboard() {
                       fontSize: "1rem",
                       resize: "vertical",
                     }}
+                    required
                   />
                 </div>
 
@@ -748,6 +794,7 @@ export default function AdminDashboard() {
                     </label>
                     <input
                       type="number"
+                      min="1"
                       value={productForm.price}
                       onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
                       style={{
@@ -757,6 +804,7 @@ export default function AdminDashboard() {
                         borderRadius: "8px",
                         fontSize: "1rem",
                       }}
+                      required
                     />
                   </div>
 
@@ -766,6 +814,7 @@ export default function AdminDashboard() {
                     </label>
                     <input
                       type="number"
+                      min="0"
                       value={productForm.stock}
                       onChange={(e) => setProductForm({ ...productForm, stock: Number(e.target.value) })}
                       style={{
@@ -793,6 +842,7 @@ export default function AdminDashboard() {
                       borderRadius: "8px",
                       fontSize: "1rem",
                     }}
+                    required
                   >
                     <option value="">Sélectionner une catégorie</option>
                     {categories.map((cat) => (
@@ -825,7 +875,7 @@ export default function AdminDashboard() {
                     <input
                       type="file"
                       multiple
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={handleFileChange}
                       style={{ display: "none" }}
                     />
@@ -873,6 +923,7 @@ export default function AdminDashboard() {
 
                 <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                   <button
+                    type="button"
                     onClick={() => setShowProductForm(false)}
                     style={{
                       flex: 1,
@@ -887,14 +938,14 @@ export default function AdminDashboard() {
                     Annuler
                   </button>
                   <button
-                    onClick={handleSubmitProduct}
+                    type="submit"
                     disabled={formLoading}
                     style={{
                       flex: 1,
                       padding: "0.875rem",
                       border: "none",
                       borderRadius: "8px",
-                      background: "#FF7F00",
+                      background: formLoading ? "#ccc" : "#FF7F00",
                       color: "white",
                       cursor: formLoading ? "not-allowed" : "pointer",
                       fontSize: "1rem",
@@ -904,7 +955,7 @@ export default function AdminDashboard() {
                     {formLoading ? "Création..." : "Créer le produit"}
                   </button>
                 </div>
-              </div>
+              </form>
             </motion.div>
           </motion.div>
         )}

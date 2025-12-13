@@ -1,16 +1,24 @@
 const Product = require('../models/product');
 
-
 exports.createProduct = async (req, res) => {
   try {
+    console.log('===== DEBUT CREATION PRODUIT =====');
+    console.log('req.body:', req.body);
+    console.log('req.files:', req.files);
+    console.log('==================================');
+
+    // Validation des fichiers
     if (!req.files || req.files.length === 0) {
+      console.log('ERREUR: Aucune image reçue');
       return res.status(400).json({
         success: false,
         message: "Aucune image reçue"
       });
     }
 
+    // Récupération des URLs Cloudinary
     const images = req.files.map(file => file.path);
+    console.log('URLs Cloudinary:', images);
 
     const product = new Product({
       title: req.body.title,
@@ -22,6 +30,7 @@ exports.createProduct = async (req, res) => {
     });
 
     await product.save();
+    console.log('Produit sauvegardé avec succès:', product._id);
 
     res.status(201).json({
       success: true,
@@ -30,7 +39,7 @@ exports.createProduct = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error('ERREUR création produit:', error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -41,6 +50,8 @@ exports.createProduct = async (req, res) => {
 exports.getproduct = async (req, res) => {
   try {
     const products = await Product.find().lean();
+    console.log('Produits récupérés:', products.length);
+    
     res.status(200).json(products);
   } catch (error) {
     console.error("Erreur ProductList:", error);

@@ -301,66 +301,86 @@ export const usermessage = async (): Promise<MessageData[]> => {
     throw error;
   }
 };
-//------------ENREGISTREMENT PRODUIT-----------------
-
-
+// ------------------- ENREGISTREMENT PRODUIT -----------------
 export const createproduct = async (
   productData: ProductData
 ): Promise<ApiResponse> => {
   try {
+    console.log('📦 Création produit:', productData);
+
     const formData = new FormData();
 
+    // Ajout des données texte
     formData.append('title', productData.title);
     formData.append('description', productData.description);
     formData.append('price', productData.price.toString());
     formData.append('category', productData.category);
     formData.append('stock', productData.stock.toString());
 
+    // Ajout des images
     if (productData.images?.length) {
-      productData.images.forEach((file) => {
+      console.log(`📸 Ajout de ${productData.images.length} image(s)`);
+      productData.images.forEach((file, index) => {
+        console.log(`Image ${index + 1}:`, file.name, file.type, file.size);
         formData.append('images', file);
       });
+    } else {
+      console.warn('⚠️ Aucune image fournie');
     }
 
-    const response = await fetchWithTimeout(`${API_URL}/product`, {
+    // Log pour debug
+    console.log('🔗 URL appelée:', `${API_URL}/product/`);
+
+    // IMPORTANT: NE PAS mettre Content-Type avec FormData
+    // Le navigateur le gère automatiquement avec la bonne boundary
+    const response = await fetch(`${API_URL}/product/`, {
       method: 'POST',
       body: formData,
+      // Pas de headers ! Le navigateur gère automatiquement
     });
+
+    console.log('📡 Statut de la réponse:', response.status);
 
     const data: ApiResponse = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Erreur création produit');
+      console.error('❌ Erreur serveur:', data);
+      throw new Error(data.message || data.error || 'Erreur création produit');
     }
 
+    console.log('✅ Produit créé avec succès:', data);
     return data;
-  } catch (error) {
-    console.error('Erreur création produit:', error);
+
+  } catch (error: any) {
+    console.error('❌ Erreur création produit:', error);
     throw error;
   }
 };
 
-
+// ------------------- LISTE PRODUITS -----------------
 export const productlist = async (): Promise<any[]> => {
-  try{
-const response= await fetchWithTimeout (`${API_URL}/product/liste`,
-  {
-    method:'GET',
-    headers: {
-        'Content-Type': 'application/json',
-      },
-  }
-)
+  try {
+    const response = await fetchWithTimeout(
+      `${API_URL}/product/liste`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     const data = await response.json();
-     if (!response.ok) {
+    
+    if (!response.ok) {
       throw new Error(data.error || data.message || "Erreur récupération produits");
     }
-    return data;
-  }
 
-catch (error:any){
- console.error(' Erreur productlist:', error);
+    console.log('📋 Produits récupérés:', data.length);
+    return data;
+
+  } catch (error: any) {
+    console.error('❌ Erreur productlist:', error);
     throw error;
-}
-}
+  }
+};
