@@ -68,10 +68,10 @@ export default function AdminDashboard() {
   ];
 
   const categories = [
-    { value: "electronics", label: "Électronique" },
-    { value: "clothing", label: "Vêtements" },
-    { value: "food", label: "Alimentation" },
-    { value: "books", label: "Livres" },
+    { value: "Hommes", label: "Hommes" },
+    { value: "Femmes", label: "Femmes" },
+    { value: "Accessoires", label: "Accessoires" },
+    { value: "Chaussures", label: "Chaussures" },
     { value: "other", label: "Autre" },
   ];
 
@@ -218,32 +218,42 @@ export default function AdminDashboard() {
     window.location.href = "/";
   };
 
+  const statCards = [
+    { label: "Total Clients", value: users.length, icon: IconUsers, color: "#FF7F00", bgColor: "#FFF3E0" },
+    { label: "Total Produits", value: products.length, icon: IconShoppingBag, color: "#8E8E8E", bgColor: "#F5F5F5" },
+    { label: "Messages", value: messages.length, icon: IconMessage, color: "#FF7F00", bgColor: "#FFF3E0" },
+    { label: "Ventes", value: "0 FCFA", icon: IconChartBar, color: "#8E8E8E", bgColor: "#F5F5F5" },
+  ];
+
   return (
     <div
       style={{
         display: "flex",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #FF7F00 0%, #8E8E8E 100%)",
+        background: "#FAFAFA",
         fontFamily: "Work Sans, sans-serif",
       }}
     >
       <aside
         style={{
-          width: "260px",
-          background: "rgba(255,255,255,0.95)",
-          padding: "2rem 1rem",
-          borderRight: "1px solid rgba(224,224,224,0.5)",
+          width: "280px",
+          background: "white",
+          padding: "2rem 1.25rem",
+          boxShadow: "2px 0 10px rgba(0,0,0,0.05)",
           display: "flex",
           flexDirection: "column",
         }}
       >
         <div
           style={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            color: "#FF7F00",
-            marginBottom: "2rem",
+            fontSize: "1.75rem",
+            fontWeight: "700",
+            background: "linear-gradient(135deg, #FF7F00 0%, #FF9933 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            marginBottom: "3rem",
             textAlign: "center",
+            letterSpacing: "-0.5px",
           }}
         >
           DjassamanShop
@@ -253,48 +263,47 @@ export default function AdminDashboard() {
           {menu.map((item) => (
             <motion.div
               key={item.label}
-              whileHover={{ scale: 1.05, x: 5 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02, x: 4 }}
+              whileTap={{ scale: 0.98 }}
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "1rem",
-                padding: "0.875rem 1.25rem",
-                borderRadius: "12px",
+                padding: "1rem 1.25rem",
+                borderRadius: "14px",
                 cursor: "pointer",
-                background:
-                  active === item.label
-                    ? "linear-gradient(120deg, #FFE0BF, #EFEFEF)"
-                    : "transparent",
-                color: active === item.label ? "#FF7F00" : "#6B6B6B",
+                background: active === item.label ? "#FF7F00" : "transparent",
+                color: active === item.label ? "white" : "#666",
                 marginBottom: "0.5rem",
-                fontWeight: active === item.label ? "600" : "normal",
+                fontWeight: active === item.label ? "600" : "500",
+                transition: "all 0.2s ease",
               }}
               onClick={() => setActive(item.label)}
             >
-              <item.icon size={20} />
+              <item.icon size={22} />
               <span>{item.label}</span>
             </motion.div>
           ))}
         </div>
 
         <motion.div
-          whileHover={{ scale: 1.05, x: 5 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleLogout}
           style={{
             display: "flex",
             alignItems: "center",
             gap: "1rem",
-            padding: "0.875rem 1.25rem",
-            borderRadius: "12px",
+            padding: "1rem 1.25rem",
+            borderRadius: "14px",
             cursor: "pointer",
-            background: "#FF7F00",
-            color: "#FFF",
+            background: "#8E8E8E",
+            color: "white",
             marginTop: "1rem",
+            fontWeight: "600",
           }}
         >
-          <IconLogout size={20} />
+          <IconLogout size={22} />
           <span>Déconnexion</span>
         </motion.div>
       </aside>
@@ -302,9 +311,9 @@ export default function AdminDashboard() {
       <main
         style={{
           flex: 1,
-          padding: "2rem",
+          padding: "2.5rem",
           overflowY: "auto",
-          color: "#FFF",
+          background: "#FAFAFA",
         }}
       >
         <motion.h1
@@ -312,8 +321,10 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           style={{
             fontSize: "2.5rem",
-            fontWeight: "bold",
-            marginBottom: "2rem",
+            fontWeight: "700",
+            marginBottom: "2.5rem",
+            color: "#1A1A1A",
+            letterSpacing: "-0.5px",
           }}
         >
           {active}
@@ -323,26 +334,23 @@ export default function AdminDashboard() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
               gap: "1.5rem",
             }}
           >
-            {[
-              { label: "Total Clients", value: users.length, icon: IconUsers },
-              { label: "Total Produits", value: products.length, icon: IconShoppingBag },
-              { label: "Messages", value: messages.length, icon: IconMessage },
-              { label: "Ventes", value: "0 FCFA", icon: IconChartBar },
-            ].map((stat, i) => (
+            {statCards.map((stat, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -4, boxShadow: "0 12px 24px rgba(0,0,0,0.1)" }}
                 style={{
-                  background: "rgba(255,255,255,0.15)",
+                  background: stat.bgColor,
                   padding: "2rem",
-                  borderRadius: "16px",
-                  backdropFilter: "blur(10px)",
+                  borderRadius: "20px",
+                  border: "1px solid rgba(0,0,0,0.05)",
+                  transition: "all 0.3s ease",
                 }}
               >
                 <div
@@ -353,14 +361,25 @@ export default function AdminDashboard() {
                   }}
                 >
                   <div>
-                    <div style={{ opacity: 0.8, marginBottom: "0.5rem" }}>
+                    <div style={{ color: "#666", marginBottom: "0.75rem", fontSize: "0.95rem", fontWeight: "500" }}>
                       {stat.label}
                     </div>
-                    <div style={{ fontSize: "2rem", fontWeight: "bold" }}>
+                    <div style={{ fontSize: "2.25rem", fontWeight: "700", color: stat.color }}>
                       {stat.value}
                     </div>
                   </div>
-                  <stat.icon size={40} style={{ opacity: 0.6 }} />
+                  <div
+                    style={{
+                      background: stat.color,
+                      padding: "1rem",
+                      borderRadius: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <stat.icon size={32} style={{ color: "white" }} />
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -377,20 +396,22 @@ export default function AdminDashboard() {
               }}
             >
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setShowProductForm(true)}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.875rem 1.5rem",
-                  background: "#8E8E8E",
-                  color: "#FFF",
-                  borderRadius: "12px",
+                  gap: "0.75rem",
+                  padding: "1rem 1.75rem",
+                  background: "#FF7F00",
+                  color: "white",
+                  borderRadius: "14px",
                   border: "none",
                   cursor: "pointer",
                   fontSize: "1rem",
+                  fontWeight: "600",
+                  boxShadow: "0 4px 12px rgba(255,127,0,0.25)",
                 }}
               >
                 <IconPlus size={20} /> Ajouter un produit
@@ -399,20 +420,21 @@ export default function AdminDashboard() {
 
             <div
               style={{
-                background: "rgba(255,255,255,0.15)",
-                padding: "1.5rem",
-                borderRadius: "12px",
-                backdropFilter: "blur(10px)",
+                background: "white",
+                padding: "2rem",
+                borderRadius: "20px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                border: "1px solid rgba(0,0,0,0.05)",
               }}
             >
-              <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem" }}>
+              <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem", color: "#1A1A1A", fontWeight: "600" }}>
                 Liste des produits ({products.length})
               </h2>
 
               {loading ? (
-                <div style={{ textAlign: "center", padding: "2rem" }}>
-                  <IconLoader size={40} style={{ animation: "spin 1s linear infinite" }} />
-                  <p style={{ marginTop: "1rem" }}>Chargement...</p>
+                <div style={{ textAlign: "center", padding: "3rem" }}>
+                  <IconLoader size={40} style={{ animation: "spin 1s linear infinite", color: "#FF7F00" }} />
+                  <p style={{ marginTop: "1rem", color: "#666" }}>Chargement...</p>
                 </div>
               ) : error ? (
                 <div
@@ -420,44 +442,35 @@ export default function AdminDashboard() {
                     display: "flex",
                     alignItems: "center",
                     gap: "1rem",
-                    padding: "1rem",
-                    background: "rgba(255,0,0,0.2)",
-                    borderRadius: "8px",
+                    padding: "1.25rem",
+                    background: "#FEE",
+                    borderRadius: "12px",
+                    color: "#C33",
                   }}
                 >
                   <IconAlertCircle size={24} />
                   <span>{error}</span>
                 </div>
               ) : products.length === 0 ? (
-                <p style={{ textAlign: "center", padding: "2rem", opacity: 0.8 }}>
+                <p style={{ textAlign: "center", padding: "3rem", color: "#999" }}>
                   Aucun produit ajouté
                 </p>
               ) : (
                 <div style={{ overflowX: "auto" }}>
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                    }}
-                  >
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr
-                        style={{
-                          textAlign: "left",
-                          borderBottom: "2px solid rgba(255,255,255,0.3)",
-                        }}
-                      >
-                        <th style={{ padding: "1rem" }}>Image</th>
-                        <th style={{ padding: "1rem" }}>Titre</th>
-                        <th style={{ padding: "1rem" }}>Prix</th>
-                        <th style={{ padding: "1rem" }}>Catégorie</th>
-                        <th style={{ padding: "1rem" }}>Stock</th>
-                        <th style={{ padding: "1rem" }}>Actions</th>
+                      <tr style={{ textAlign: "left", borderBottom: "2px solid #F0F0F0" }}>
+                        <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Image</th>
+                        <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Titre</th>
+                        <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Prix</th>
+                        <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Catégorie</th>
+                        <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Stock</th>
+                        <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Actions</th>
                       </tr>
                     </thead>
 
                     <tbody>
-                      {products.map((product) => {
+                      {products.map((product, idx) => {
                         const imageUrl = product.images[0];
                         const finalUrl = imageUrl?.startsWith('http') 
                           ? imageUrl 
@@ -467,7 +480,8 @@ export default function AdminDashboard() {
                           <tr
                             key={product._id}
                             style={{
-                              borderBottom: "1px solid rgba(255,255,255,0.1)",
+                              borderBottom: "1px solid #F5F5F5",
+                              background: idx % 2 === 0 ? "white" : "#FAFAFA",
                             }}
                           >
                             <td style={{ padding: "1rem" }}>
@@ -476,31 +490,35 @@ export default function AdminDashboard() {
                                 alt={product.title}
                                 onError={(e) => {
                                   console.error('Erreur chargement image:', finalUrl);
-                                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect fill="%23ddd" width="50" height="50"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EImg%3C/text%3E%3C/svg%3E';
+                                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60"%3E%3Crect fill="%23f0f0f0" width="60" height="60" rx="8"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3EImg%3C/text%3E%3C/svg%3E';
                                 }}
                                 style={{
-                                  width: "50px",
-                                  height: "50px",
+                                  width: "60px",
+                                  height: "60px",
                                   objectFit: "cover",
-                                  borderRadius: "8px",
-                                  border: "1px solid rgba(255,255,255,0.2)"
+                                  borderRadius: "12px",
+                                  border: "1px solid #E0E0E0"
                                 }}
                               />
                             </td>
-                            <td style={{ padding: "1rem" }}>{product.title}</td>
-                            <td style={{ padding: "1rem" }}>{product.price} FCFA</td>
-                            <td style={{ padding: "1rem" }}>{product.category}</td>
-                            <td style={{ padding: "1rem" }}>{product.stock}</td>
+                            <td style={{ padding: "1rem", color: "#333", fontWeight: "500" }}>{product.title}</td>
+                            <td style={{ padding: "1rem", color: "#FF7F00", fontWeight: "600" }}>{product.price} FCFA</td>
+                            <td style={{ padding: "1rem", color: "#666" }}>{product.category}</td>
+                            <td style={{ padding: "1rem", color: "#666" }}>{product.stock}</td>
                             <td style={{ padding: "1rem" }}>
-                              <div style={{ display: "flex", gap: "0.5rem" }}>
-                                <IconEdit
-                                  size={20}
-                                  style={{ cursor: "pointer", opacity: 0.8 }}
-                                />
-                                <IconTrash
-                                  size={20}
-                                  style={{ cursor: "pointer", opacity: 0.8, color: "#ff6b6b" }}
-                                />
+                              <div style={{ display: "flex", gap: "0.75rem" }}>
+                                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                  <IconEdit
+                                    size={20}
+                                    style={{ cursor: "pointer", color: "#8E8E8E" }}
+                                  />
+                                </motion.div>
+                                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                  <IconTrash
+                                    size={20}
+                                    style={{ cursor: "pointer", color: "#ff6b6b" }}
+                                  />
+                                </motion.div>
                               </div>
                             </td>
                           </tr>
@@ -517,20 +535,21 @@ export default function AdminDashboard() {
         {active === "Clients" && (
           <div
             style={{
-              background: "rgba(255,255,255,0.15)",
-              padding: "1.5rem",
-              borderRadius: "12px",
-              backdropFilter: "blur(10px)",
+              background: "white",
+              padding: "2rem",
+              borderRadius: "20px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              border: "1px solid rgba(0,0,0,0.05)",
             }}
           >
-            <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem" }}>
+            <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem", color: "#1A1A1A", fontWeight: "600" }}>
               Liste des clients ({users.length})
             </h2>
 
             {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem" }}>
-                <IconLoader size={40} style={{ animation: "spin 1s linear infinite" }} />
-                <p style={{ marginTop: "1rem" }}>Chargement...</p>
+              <div style={{ textAlign: "center", padding: "3rem" }}>
+                <IconLoader size={40} style={{ animation: "spin 1s linear infinite", color: "#FF7F00" }} />
+                <p style={{ marginTop: "1rem", color: "#666" }}>Chargement...</p>
               </div>
             ) : error ? (
               <div
@@ -538,52 +557,44 @@ export default function AdminDashboard() {
                   display: "flex",
                   alignItems: "center",
                   gap: "1rem",
-                  padding: "1rem",
-                  background: "rgba(255,0,0,0.2)",
-                  borderRadius: "8px",
+                  padding: "1.25rem",
+                  background: "#FEE",
+                  borderRadius: "12px",
+                  color: "#C33",
                 }}
               >
                 <IconAlertCircle size={24} />
                 <span>{error}</span>
               </div>
             ) : users.length === 0 ? (
-              <p style={{ textAlign: "center", padding: "2rem", opacity: 0.8 }}>
+              <p style={{ textAlign: "center", padding: "3rem", color: "#999" }}>
                 Aucun client enregistré
               </p>
             ) : (
               <div style={{ overflowX: "auto" }}>
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                  }}
-                >
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
-                    <tr
-                      style={{
-                        textAlign: "left",
-                        borderBottom: "2px solid rgba(255,255,255,0.3)",
-                      }}
-                    >
-                      <th style={{ padding: "1rem" }}>Nom complet</th>
-                      <th style={{ padding: "1rem" }}>Email</th>
-                      <th style={{ padding: "1rem" }}>Téléphone</th>
+                    <tr style={{ textAlign: "left", borderBottom: "2px solid #F0F0F0" }}>
+                      <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Nom complet</th>
+                      <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Email</th>
+                      <th style={{ padding: "1rem", color: "#666", fontWeight: "600" }}>Téléphone</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {users.map((u) => (
+                    {users.map((u, idx) => (
                       <tr
                         key={u._id}
                         style={{
-                          borderBottom: "1px solid rgba(255,255,255,0.1)",
+                          borderBottom: "1px solid #F5F5F5",
+                          background: idx % 2 === 0 ? "white" : "#FAFAFA",
                         }}
                       >
-                        <td style={{ padding: "1rem" }}>
+                        <td style={{ padding: "1rem", color: "#333", fontWeight: "500" }}>
                           {u.firstname} {u.lastname}
                         </td>
-                        <td style={{ padding: "1rem" }}>{u.email}</td>
-                        <td style={{ padding: "1rem" }}>{u.phone}</td>
+                        <td style={{ padding: "1rem", color: "#666" }}>{u.email}</td>
+                        <td style={{ padding: "1rem", color: "#666" }}>{u.phone}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -596,20 +607,21 @@ export default function AdminDashboard() {
         {active === "Messages" && (
           <div
             style={{
-              background: "rgba(255,255,255,0.15)",
-              padding: "1.5rem",
-              borderRadius: "12px",
-              backdropFilter: "blur(10px)",
+              background: "white",
+              padding: "2rem",
+              borderRadius: "20px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              border: "1px solid rgba(0,0,0,0.05)",
             }}
           >
-            <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem" }}>
+            <h2 style={{ marginBottom: "1.5rem", fontSize: "1.5rem", color: "#1A1A1A", fontWeight: "600" }}>
               Messages reçus ({messages.length})
             </h2>
 
             {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem" }}>
-                <IconLoader size={40} style={{ animation: "spin 1s linear infinite" }} />
-                <p style={{ marginTop: "1rem" }}>Chargement...</p>
+              <div style={{ textAlign: "center", padding: "3rem" }}>
+                <IconLoader size={40} style={{ animation: "spin 1s linear infinite", color: "#FF7F00" }} />
+                <p style={{ marginTop: "1rem", color: "#666" }}>Chargement...</p>
               </div>
             ) : error ? (
               <div
@@ -617,30 +629,31 @@ export default function AdminDashboard() {
                   display: "flex",
                   alignItems: "center",
                   gap: "1rem",
-                  padding: "1rem",
-                  background: "rgba(255,0,0,0.2)",
-                  borderRadius: "8px",
+                  padding: "1.25rem",
+                  background: "#FEE",
+                  borderRadius: "12px",
+                  color: "#C33",
                 }}
               >
                 <IconAlertCircle size={24} />
                 <span>{error}</span>
               </div>
             ) : messages.length === 0 ? (
-              <p style={{ textAlign: "center", padding: "2rem", opacity: 0.8 }}>
+              <p style={{ textAlign: "center", padding: "3rem", color: "#999" }}>
                 Aucun message reçu
               </p>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {messages.map((msg) => (
+                {messages.map((msg, idx) => (
                   <motion.div
                     key={msg._id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     style={{
-                      background: "rgba(255,255,255,0.1)",
-                      padding: "1.5rem",
-                      borderRadius: "12px",
-                      border: "1px solid rgba(255,255,255,0.2)",
+                      background: idx % 2 === 0 ? "#FFF3E0" : "#F5F5F5",
+                      padding: "1.75rem",
+                      borderRadius: "16px",
+                      border: "1px solid rgba(0,0,0,0.05)",
                     }}
                   >
                     <div
@@ -651,10 +664,10 @@ export default function AdminDashboard() {
                       }}
                     >
                       <div>
-                        <div style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+                        <div style={{ fontWeight: "600", fontSize: "1.1rem", color: "#1A1A1A" }}>
                           {msg.name}
                         </div>
-                        <div style={{ opacity: 0.8, fontSize: "0.9rem" }}>
+                        <div style={{ color: "#666", fontSize: "0.9rem", marginTop: "0.25rem" }}>
                           {msg.email}
                         </div>
                       </div>
@@ -662,13 +675,13 @@ export default function AdminDashboard() {
                     <div
                       style={{
                         fontWeight: "600",
-                        marginBottom: "0.5rem",
-                        color: "#FFE0BF",
+                        marginBottom: "0.75rem",
+                        color: idx % 2 === 0 ? "#FF7F00" : "#8E8E8E",
                       }}
                     >
                       Sujet: {msg.sujet}
                     </div>
-                    <div style={{ opacity: 0.9, lineHeight: 1.6 }}>
+                    <div style={{ color: "#444", lineHeight: 1.6 }}>
                       {msg.message}
                     </div>
                   </motion.div>
@@ -681,10 +694,13 @@ export default function AdminDashboard() {
         {active === "Statistiques" && (
           <div
             style={{
-              textAlign: "center",
-              opacity: 0.8,
-              fontSize: "1.2rem",
+              background: "white",
               padding: "4rem",
+              borderRadius: "20px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              textAlign: "center",
+              color: "#999",
+              fontSize: "1.2rem",
             }}
           >
             Les statistiques s'afficheront ici...
@@ -704,12 +720,13 @@ export default function AdminDashboard() {
               left: 0,
               right: 0,
               bottom: 0,
-              background: "rgba(0,0,0,0.7)",
+              background: "rgba(0,0,0,0.6)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               zIndex: 1000,
               padding: "2rem",
+              backdropFilter: "blur(4px)",
             }}
             onClick={() => setShowProductForm(false)}
           >
@@ -720,13 +737,14 @@ export default function AdminDashboard() {
               onClick={(e) => e.stopPropagation()}
               style={{
                 background: "white",
-                borderRadius: "16px",
-                padding: "2rem",
-                maxWidth: "600px",
+                borderRadius: "24px",
+                padding: "2.5rem",
+                maxWidth: "640px",
                 width: "100%",
                 maxHeight: "90vh",
                 overflowY: "auto",
                 color: "#333",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
               }}
             >
               <div
@@ -734,22 +752,24 @@ export default function AdminDashboard() {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  marginBottom: "1.5rem",
+                  marginBottom: "2rem",
                 }}
               >
-                <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+                <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#1A1A1A" }}>
                   Ajouter un produit
                 </h2>
-                <IconX
-                  size={24}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setShowProductForm(false)}
-                />
+                <motion.div whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }}>
+                  <IconX
+                    size={28}
+                    style={{ cursor: "pointer", color: "#999" }}
+                    onClick={() => setShowProductForm(false)}
+                  />
+                </motion.div>
               </div>
 
-              <form onSubmit={handleSubmitProduct} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <form onSubmit={handleSubmitProduct} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
                     Titre *
                   </label>
                   <input
@@ -758,17 +778,21 @@ export default function AdminDashboard() {
                     onChange={(e) => setProductForm({ ...productForm, title: e.target.value })}
                     style={{
                       width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
+                      padding: "0.875rem",
+                      border: "2px solid #E0E0E0",
+                      borderRadius: "12px",
                       fontSize: "1rem",
+                      outline: "none",
+                      transition: "border 0.2s",
                     }}
+                    onFocus={(e) => e.target.style.borderColor = "#FF7F00"}
+                    onBlur={(e) => e.target.style.borderColor = "#E0E0E0"}
                     required
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
                     Description *
                   </label>
                   <textarea
@@ -777,19 +801,23 @@ export default function AdminDashboard() {
                     rows={4}
                     style={{
                       width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
+                      padding: "0.875rem",
+                      border: "2px solid #E0E0E0",
+                      borderRadius: "12px",
                       fontSize: "1rem",
                       resize: "vertical",
+                      outline: "none",
+                      transition: "border 0.2s",
                     }}
+                    onFocus={(e) => e.target.style.borderColor = "#FF7F00"}
+                    onBlur={(e) => e.target.style.borderColor = "#E0E0E0"}
                     required
                   />
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
                       Prix (FCFA) *
                     </label>
                     <input
@@ -799,17 +827,21 @@ export default function AdminDashboard() {
                       onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
                       style={{
                         width: "100%",
-                        padding: "0.75rem",
-                        border: "1px solid #ddd",
-                        borderRadius: "8px",
+                        padding: "0.875rem",
+                        border: "2px solid #E0E0E0",
+                        borderRadius: "12px",
                         fontSize: "1rem",
+                        outline: "none",
+                        transition: "border 0.2s",
                       }}
+                      onFocus={(e) => e.target.style.borderColor = "#FF7F00"}
+                      onBlur={(e) => e.target.style.borderColor = "#E0E0E0"}
                       required
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
                       Stock
                     </label>
                     <input
@@ -819,17 +851,21 @@ export default function AdminDashboard() {
                       onChange={(e) => setProductForm({ ...productForm, stock: Number(e.target.value) })}
                       style={{
                         width: "100%",
-                        padding: "0.75rem",
-                        border: "1px solid #ddd",
-                        borderRadius: "8px",
+                        padding: "0.875rem",
+                        border: "2px solid #E0E0E0",
+                        borderRadius: "12px",
                         fontSize: "1rem",
+                        outline: "none",
+                        transition: "border 0.2s",
                       }}
+                      onFocus={(e) => e.target.style.borderColor = "#8E8E8E"}
+                      onBlur={(e) => e.target.style.borderColor = "#E0E0E0"}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
                     Catégorie *
                   </label>
                   <select
@@ -837,11 +873,15 @@ export default function AdminDashboard() {
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                     style={{
                       width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
+                      padding: "0.875rem",
+                      border: "2px solid #E0E0E0",
+                      borderRadius: "12px",
                       fontSize: "1rem",
+                      outline: "none",
+                      transition: "border 0.2s",
                     }}
+                    onFocus={(e) => e.target.style.borderColor = "#FF7F00"}
+                    onBlur={(e) => e.target.style.borderColor = "#E0E0E0"}
                     required
                   >
                     <option value="">Sélectionner une catégorie</option>
@@ -854,7 +894,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
                     Images (max 5) *
                   </label>
                   <label
@@ -864,14 +904,15 @@ export default function AdminDashboard() {
                       justifyContent: "center",
                       gap: "0.5rem",
                       padding: "2rem",
-                      border: "2px dashed #ddd",
-                      borderRadius: "8px",
+                      border: "2px dashed #E0E0E0",
+                      borderRadius: "12px",
                       cursor: "pointer",
-                      background: "#f9f9f9",
+                      background: "#FAFAFA",
+                      transition: "all 0.2s",
                     }}
                   >
-                    <IconUpload size={24} />
-                    <span>Cliquez pour sélectionner des images</span>
+                    <IconUpload size={24} color="#FF7F00" />
+                    <span style={{ color: "#666" }}>Cliquez pour sélectionner des images</span>
                     <input
                       type="file"
                       multiple
@@ -886,7 +927,7 @@ export default function AdminDashboard() {
                       style={{
                         display: "grid",
                         gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
-                        gap: "0.5rem",
+                        gap: "0.75rem",
                         marginTop: "1rem",
                       }}
                     >
@@ -899,22 +940,29 @@ export default function AdminDashboard() {
                               width: "100%",
                               height: "100px",
                               objectFit: "cover",
-                              borderRadius: "8px",
+                              borderRadius: "12px",
+                              border: "2px solid #E0E0E0",
                             }}
                           />
-                          <IconX
-                            size={20}
-                            style={{
-                              position: "absolute",
-                              top: "5px",
-                              right: "5px",
-                              background: "white",
-                              borderRadius: "50%",
-                              cursor: "pointer",
-                              padding: "2px",
-                            }}
-                            onClick={() => removeImage(index)}
-                          />
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <IconX
+                              size={20}
+                              style={{
+                                position: "absolute",
+                                top: "5px",
+                                right: "5px",
+                                background: "white",
+                                borderRadius: "50%",
+                                cursor: "pointer",
+                                padding: "4px",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                              }}
+                              onClick={() => removeImage(index)}
+                            />
+                          </motion.div>
                         </div>
                       ))}
                     </div>
@@ -922,38 +970,45 @@ export default function AdminDashboard() {
                 </div>
 
                 <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => setShowProductForm(false)}
                     style={{
                       flex: 1,
-                      padding: "0.875rem",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
+                      padding: "1rem",
+                      border: "2px solid #E0E0E0",
+                      borderRadius: "12px",
                       background: "white",
                       cursor: "pointer",
                       fontSize: "1rem",
+                      fontWeight: "600",
+                      color: "#666",
                     }}
                   >
                     Annuler
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     type="submit"
                     disabled={formLoading}
+                    whileHover={{ scale: formLoading ? 1 : 1.02 }}
+                    whileTap={{ scale: formLoading ? 1 : 0.98 }}
                     style={{
                       flex: 1,
-                      padding: "0.875rem",
+                      padding: "1rem",
                       border: "none",
-                      borderRadius: "8px",
+                      borderRadius: "12px",
                       background: formLoading ? "#ccc" : "#FF7F00",
                       color: "white",
                       cursor: formLoading ? "not-allowed" : "pointer",
                       fontSize: "1rem",
                       fontWeight: "600",
+                      boxShadow: formLoading ? "none" : "0 4px 12px rgba(255,127,0,0.25)",
                     }}
                   >
                     {formLoading ? "Création..." : "Créer le produit"}
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </motion.div>

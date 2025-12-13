@@ -3,7 +3,7 @@ import { Box, Text, Button } from "@mantine/core";
 import Footer from "../components/common/Footer";
 import { FeaturesAsymmetrical } from "../components/common/CaracteristicsCard";
 import { motion } from "framer-motion";
-
+import { Link } from "react-router-dom";
 export default function Home() {
   return (
     <>
@@ -56,6 +56,7 @@ export default function Home() {
               variant="gradient"
               gradient={{ from: "shopOrange.5", to: "neutral.7", deg: 120 }}
               size="md"
+               component={Link} to="/product"
             >
               Voir nos articles
             </Button>
