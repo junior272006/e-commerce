@@ -304,38 +304,41 @@ export const usermessage = async (): Promise<MessageData[]> => {
 //------------ENREGISTREMENT PRODUIT-----------------
 
 
-export const createproduct = async (productData: ProductData): Promise<ApiResponse> => {
+export const createproduct = async (
+  productData: ProductData
+): Promise<ApiResponse> => {
   try {
     const formData = new FormData();
-    
+
     formData.append('title', productData.title);
     formData.append('description', productData.description);
     formData.append('price', productData.price.toString());
     formData.append('category', productData.category);
     formData.append('stock', productData.stock.toString());
-    
-    // Ajouter les fichiers images
-    productData.images.forEach((file) => {
-      formData.append('images', file);
-    });
+
+    if (productData.images?.length) {
+      productData.images.forEach((file) => {
+        formData.append('images', file);
+      });
+    }
 
     const response = await fetchWithTimeout(`${API_URL}/product`, {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
     const data: ApiResponse = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || data.message || 'Erreur création produit');
+      throw new Error(data.message || 'Erreur création produit');
     }
 
     return data;
-  } catch (error: any) {
-    console.error('Erreur product:', error);
+  } catch (error) {
+    console.error('Erreur création produit:', error);
     throw error;
   }
-}
+};
 
 
 export const productlist = async (): Promise<any[]> => {

@@ -1,31 +1,48 @@
 const Product = require('../models/product');
 
+
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, category, stock } = req.body;
+    console.log("BODY :", req.body);
+    console.log("FILES :", req.files);
 
-    const imageUrls = req.files.map(file => file.path); // URL Cloudinary
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Aucune image envoyée"
+      });
+    }
+
+    const images = req.files.map(file => file.path); // Cloudinary URL
 
     const product = new Product({
-      title,
-      description,
-      price,
-      category,
-      stock,
-      images: imageUrls
+      title: req.body.title,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      stock: req.body.stock,
+      images: images
     });
 
     await product.save();
 
     res.status(201).json({
+      success: true,
       message: "Produit créé avec succès",
-      product: product._id
+      product
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("ERREUR CREATE PRODUCT :", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Erreur serveur",
+      error: error.message
+    });
   }
 };
+
 
 
 exports.getproduct = async (req, res) => {

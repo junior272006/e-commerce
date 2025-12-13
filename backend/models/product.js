@@ -9,7 +9,7 @@ const productSchema= mongoose.Schema (
      stock: { type: Number, default: 0 },
      images: [{ type: String }],
    },
-   {timestramp:true}
+   {timestamps:true}
 )
 
 module.exports= mongoose.model('Product',productSchema)
