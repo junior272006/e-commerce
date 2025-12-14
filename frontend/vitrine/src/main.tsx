@@ -8,6 +8,8 @@ import Login from './pages/Login.tsx';
 import Home from './pages/Home.tsx';
 import Inscription from './pages/Register.tsx';
 import { theme } from './theme.ts';
+import ProductDetail from './pages/Checkout.tsx';
+import Shop from './pages/Shop.tsx';
 import Product from './pages/ProductPage.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import AdminLogin from './pages/admin/Login.tsx';
@@ -23,6 +25,8 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/register" element={<Inscription />} />
           <Route path="/dashboard" element={<Dashboard />} />
            <Route path="/product" element={<Product />} />
+            <Route path="/panier" element={<Shop />} />
+           <Route path="/product-detail" element={<ProductDetail />} />
 <Route path="/user/login" element={<Login />} />
 <Route path="/contact" element={<Contact />} />
           <Route path="/admin/login" element={<AdminLogin />} />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { IconShoppingCart, IconLoader, IconAlertCircle, IconSearch } from "@tabler/icons-react";
 import Header from "../components/common/Header";
@@ -19,11 +20,14 @@ interface Product {
 }
 
 export default function Product() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showCartNotification, setShowCartNotification] = useState(false);
+  const [addedProductName, setAddedProductName] = useState("");
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -59,9 +63,48 @@ export default function Product() {
     setFilteredProducts(filtered);
   }, [products, searchQuery]);
 
-  const handleBuyProduct = (product: Product) => {
+  // Navigation vers la page de détails avec React Router
+  const handleProductClick = (product: Product) => {
+    navigate(`/product-detail?id=${product._id}`, { 
+      state: { product } 
+    });
+  };
+
+  const handleBuyProduct = (e: React.MouseEvent, product: Product) => {
+    e.stopPropagation(); // Empêche la navigation lors du clic sur "Acheter"
+    
+    // Récupérer le panier actuel
+    const cartData = localStorage.getItem("cart");
+    const cart = cartData ? JSON.parse(cartData) : [];
+
+    // Vérifier si le produit existe déjà
+    const existingItemIndex = cart.findIndex((item: any) => item._id === product._id);
+
+    if (existingItemIndex > -1) {
+      // Mettre à jour la quantité
+      const newQuantity = cart[existingItemIndex].quantity + 1;
+      if (newQuantity <= product.stock) {
+        cart[existingItemIndex].quantity = newQuantity;
+      } else {
+        alert(`Stock insuffisant ! Maximum: ${product.stock}`);
+        return;
+      }
+    } else {
+      // Ajouter le nouveau produit
+      cart.push({ ...product, quantity: 1 });
+    }
+
+    // Sauvegarder dans localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+    
+    // Afficher la notification
+    setAddedProductName(product.title);
+    setShowCartNotification(true);
+    setTimeout(() => {
+      setShowCartNotification(false);
+    }, 3000);
+    
     console.log("Achat du produit:", product);
-    alert(`Produit "${product.title}" ajouté au panier!`);
   };
 
   const categoryLabels: Record<string, string> = {
@@ -75,6 +118,34 @@ export default function Product() {
   return (
     <>
       <Header />
+
+      {/* Notification Panier */}
+      {showCartNotification && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          style={{
+            position: "fixed",
+            top: "100px",
+            right: "20px",
+            zIndex: 9999,
+            background: "#4CAF50",
+            color: "white",
+            padding: "1rem 1.5rem",
+            borderRadius: "12px",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            fontWeight: "600",
+            fontSize: "0.95rem",
+          }}
+        >
+          <IconShoppingCart size={20} />
+          "{addedProductName}" ajouté au panier ! 🛒
+        </motion.div>
+      )}
 
       <div
         style={{
@@ -266,6 +337,7 @@ export default function Product() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ y: -6 }}
+                    onClick={() => handleProductClick(product)}
                     style={{
                       background: "white",
                       borderRadius: "16px",
@@ -387,7 +459,7 @@ export default function Product() {
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => handleBuyProduct(product)}
+                        onClick={(e) => handleBuyProduct(e, product)}
                         disabled={product.stock === 0}
                         style={{
                           width: "100%",

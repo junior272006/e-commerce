@@ -85,9 +85,9 @@ export default function Header() {
 
             {/* Panier */}
             <motion.div whileHover={{ scale: 1.06 }} transition={{ type: "spring", stiffness: 250 }}>
-              <a className={classes.link} style={{ cursor: "pointer" }}>
+              <Link to="/panier" className={classes.link}>
                 <Group gap="xs"><IconShoppingCart size={18}/> Panier</Group>
-              </a>
+              </Link>
             </motion.div>
 
             {/* Contact */}
@@ -164,7 +164,7 @@ export default function Header() {
               <a className={classes.link}><Group gap="xs"><IconShoe size={16}/> Chaussures</Group></a>
             </Stack>
 
-            <a className={classes.link}><Group gap="xs"><IconShoppingCart size={18}/> Panier</Group></a>
+             <Link to="/panier" className={classes.link} onClick={closeDrawer}><Group gap="xs"><IconShoppingCart size={18}/> Panier</Group></Link>
 
             <Link to="/contact" className={classes.link} onClick={closeDrawer}>
               <Group gap="xs"><IconPhone size={18}/> Contactez-nous</Group>
