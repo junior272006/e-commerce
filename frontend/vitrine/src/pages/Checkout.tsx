@@ -489,7 +489,7 @@ export default function ProductDetail() {
           font-weight: 600;
           cursor: pointer;
           margin-bottom: 2.5rem;
-          margin-top: 2rem;
+          margin-top: 3rem;
         }
 
         .product-grid {
@@ -681,19 +681,24 @@ export default function ProductDetail() {
 
         .add-to-cart-button {
           flex: 1;
-          padding: 1.1rem;
+          padding: 0.875rem;
           background: #FF7F00;
           color: white;
           border: none;
           border-radius: 12px;
-          font-size: 1.1rem;
+          font-size: 1rem;
           font-weight: 700;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.75rem;
+          gap: 0.5rem;
           box-shadow: 0 4px 16px rgba(255,127,0,0.3);
+        }
+
+        .add-to-cart-button svg {
+          width: 20px;
+          height: 20px;
         }
 
         .add-to-cart-button.disabled {
@@ -703,12 +708,17 @@ export default function ProductDetail() {
         }
 
         .icon-button {
-          padding: 1.1rem;
+          padding: 0.875rem;
           background: white;
           border: 2px solid #E0E0E0;
           border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
+        }
+
+        .icon-button svg {
+          width: 20px;
+          height: 20px;
         }
 
         .like-button {

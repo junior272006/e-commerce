@@ -295,6 +295,7 @@ export default function Shop() {
 
         .cart-header {
           margin-bottom: 2rem;
+          margin-top: 3rem;
         }
 
         .header-top {
