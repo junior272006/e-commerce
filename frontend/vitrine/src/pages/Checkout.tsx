@@ -760,7 +760,7 @@ export default function ProductDetail() {
           .back-button {
             padding: 0.6rem 1rem;
             font-size: 0.9rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 3rem;
             margin-top: 4rem;
           }
 
