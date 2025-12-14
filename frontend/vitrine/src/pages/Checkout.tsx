@@ -761,7 +761,7 @@ export default function ProductDetail() {
             padding: 0.6rem 1rem;
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
-            margin-top: 1rem;
+            margin-top: 2rem;
           }
 
           .product-grid {
@@ -862,12 +862,22 @@ export default function ProductDetail() {
             font-size: 1rem;
           }
 
+          .add-to-cart-button svg {
+            width: 22px;
+            height: 22px;
+          }
+
           .icon-button {
             flex: 1;
             padding: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
+          }
+
+          .icon-button svg {
+            width: 22px;
+            height: 22px;
           }
 
           .additional-info {
