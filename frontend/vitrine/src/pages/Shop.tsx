@@ -28,7 +28,6 @@ export default function Shop() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
-    // Charger le panier depuis localStorage
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
@@ -82,72 +81,25 @@ export default function Shop() {
     <>
       <Header />
 
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#FAFAFA",
-          padding: "2rem 1.5rem 3rem",
-          fontFamily: "Work Sans, sans-serif",
-        }}
-      >
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+      <div className="cart-container">
+        <div className="cart-content">
           {/* En-tête */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ marginBottom: "2rem" }}
+            className="cart-header"
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "1rem",
-              }}
-            >
-              <h1
-                style={{
-                  fontSize: "2.5rem",
-                  fontWeight: "700",
-                  color: "#1A1A1A",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                }}
-              >
-                <IconShoppingCart size={40} style={{ color: "#FF7F00" }} />
+            <div className="header-top">
+              <h1 className="cart-title">
+                <IconShoppingCart size={40} className="cart-icon" />
                 Mon Panier
               </h1>
-              <a
-                href="#/product"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.75rem 1.25rem",
-                  background: "white",
-                  color: "#666",
-                  border: "1px solid #E0E0E0",
-                  borderRadius: "10px",
-                  fontSize: "0.95rem",
-                  fontWeight: "600",
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#FF7F00";
-                  e.currentTarget.style.color = "#FF7F00";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#E0E0E0";
-                  e.currentTarget.style.color = "#666";
-                }}
-              >
+              <a href="#/product" className="continue-shopping">
                 <IconArrowLeft size={20} />
-                Continuer mes achats
+                <span className="continue-text">Continuer mes achats</span>
               </a>
             </div>
-            <p style={{ fontSize: "1.1rem", color: "#666" }}>
+            <p className="cart-subtitle">
               {cartItems.length === 0
                 ? "Votre panier est vide"
                 : `${calculateTotalItems()} article${calculateTotalItems() > 1 ? "s" : ""} dans votre panier`}
@@ -159,71 +111,23 @@ export default function Shop() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              style={{
-                background: "white",
-                borderRadius: "16px",
-                padding: "4rem 2rem",
-                textAlign: "center",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-              }}
+              className="empty-cart"
             >
-              <IconShoppingBag
-                size={100}
-                style={{ color: "#E0E0E0", marginBottom: "2rem" }}
-              />
-              <h2
-                style={{
-                  fontSize: "1.8rem",
-                  fontWeight: "700",
-                  color: "#1A1A1A",
-                  marginBottom: "1rem",
-                }}
-              >
-                Votre panier est vide
-              </h2>
-              <p style={{ fontSize: "1.1rem", color: "#666", marginBottom: "2rem" }}>
+              <IconShoppingBag size={100} className="empty-icon" />
+              <h2 className="empty-title">Votre panier est vide</h2>
+              <p className="empty-text">
                 Découvrez nos produits et ajoutez-les à votre panier !
               </p>
-              <a
-                href="#/product"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "1rem 2rem",
-                  background: "#FF7F00",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  fontSize: "1.1rem",
-                  fontWeight: "700",
-                  textDecoration: "none",
-                  boxShadow: "0 4px 16px rgba(255,127,0,0.3)",
-                  transition: "transform 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
-              >
+              <a href="#/product" className="shop-button">
                 <IconShoppingCart size={24} />
                 Voir les produits
               </a>
             </motion.div>
           ) : (
             // Panier avec articles
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 400px",
-                gap: "2rem",
-                alignItems: "start",
-              }}
-            >
+            <div className="cart-grid">
               {/* Liste des articles */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div className="items-list">
                 {cartItems.map((item, index) => {
                   const imageUrl = item.images[0]?.startsWith("http")
                     ? item.images[0]
@@ -235,34 +139,13 @@ export default function Shop() {
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      style={{
-                        background: "white",
-                        borderRadius: "16px",
-                        padding: "1.5rem",
-                        display: "flex",
-                        gap: "1.5rem",
-                        boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                      }}
+                      className="cart-item"
                     >
                       {/* Image */}
-                      <div
-                        style={{
-                          minWidth: "120px",
-                          width: "120px",
-                          height: "120px",
-                          background: "#F5F5F5",
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                        }}
-                      >
+                      <div className="item-image">
                         <img
                           src={imageUrl}
                           alt={item.title}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
                           onError={(e) => {
                             e.currentTarget.src =
                               'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120"%3E%3Crect fill="%23f0f0f0" width="120" height="120"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3EImage%3C/text%3E%3C/svg%3E';
@@ -271,66 +154,22 @@ export default function Shop() {
                       </div>
 
                       {/* Informations */}
-                      <div style={{ flex: 1 }}>
-                        <div
-                          style={{
-                            display: "inline-block",
-                            padding: "0.25rem 0.75rem",
-                            background: "#FFF3E0",
-                            color: "#FF7F00",
-                            borderRadius: "20px",
-                            fontSize: "0.75rem",
-                            fontWeight: "600",
-                            marginBottom: "0.5rem",
-                          }}
-                        >
+                      <div className="item-info">
+                        <div className="item-category">
                           {categoryLabels[item.category] || item.category}
                         </div>
 
-                        <h3
-                          style={{
-                            fontSize: "1.2rem",
-                            fontWeight: "700",
-                            color: "#1A1A1A",
-                            marginBottom: "0.5rem",
-                          }}
-                        >
-                          {item.title}
-                        </h3>
+                        <h3 className="item-title">{item.title}</h3>
 
-                        <p
-                          style={{
-                            color: "#666",
-                            fontSize: "0.9rem",
-                            marginBottom: "1rem",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {item.description}
-                        </p>
+                        <p className="item-description">{item.description}</p>
 
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                          }}
-                        >
+                        <div className="item-footer">
                           {/* Prix */}
-                          <div>
-                            <div
-                              style={{
-                                fontSize: "1.5rem",
-                                fontWeight: "700",
-                                color: "#FF7F00",
-                              }}
-                            >
+                          <div className="item-price-section">
+                            <div className="item-price">
                               {item.price.toLocaleString()} FCFA
                             </div>
-                            <div style={{ fontSize: "0.85rem", color: "#999" }}>
+                            <div className="item-stock">
                               {item.stock > 0
                                 ? `${item.stock} en stock`
                                 : "Rupture de stock"}
@@ -338,55 +177,20 @@ export default function Shop() {
                           </div>
 
                           {/* Contrôles de quantité */}
-                          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                border: "2px solid #E0E0E0",
-                                borderRadius: "10px",
-                                overflow: "hidden",
-                              }}
-                            >
+                          <div className="item-controls">
+                            <div className="quantity-controls">
                               <button
                                 onClick={() => handleQuantityChange(item._id, -1)}
                                 disabled={item.quantity <= 1}
-                                style={{
-                                  padding: "0.5rem 0.75rem",
-                                  background: "white",
-                                  border: "none",
-                                  cursor:
-                                    item.quantity <= 1 ? "not-allowed" : "pointer",
-                                  color: item.quantity <= 1 ? "#ccc" : "#1A1A1A",
-                                }}
+                                className="quantity-button"
                               >
                                 <IconMinus size={18} />
                               </button>
-                              <div
-                                style={{
-                                  padding: "0.5rem 1rem",
-                                  fontSize: "1rem",
-                                  fontWeight: "700",
-                                  borderLeft: "2px solid #E0E0E0",
-                                  borderRight: "2px solid #E0E0E0",
-                                }}
-                              >
-                                {item.quantity}
-                              </div>
+                              <div className="quantity-display">{item.quantity}</div>
                               <button
                                 onClick={() => handleQuantityChange(item._id, 1)}
                                 disabled={item.quantity >= item.stock}
-                                style={{
-                                  padding: "0.5rem 0.75rem",
-                                  background: "white",
-                                  border: "none",
-                                  cursor:
-                                    item.quantity >= item.stock
-                                      ? "not-allowed"
-                                      : "pointer",
-                                  color:
-                                    item.quantity >= item.stock ? "#ccc" : "#1A1A1A",
-                                }}
+                                className="quantity-button"
                               >
                                 <IconPlus size={18} />
                               </button>
@@ -396,14 +200,7 @@ export default function Shop() {
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() => handleRemoveItem(item._id)}
-                              style={{
-                                padding: "0.75rem",
-                                background: "#FEE",
-                                color: "#C33",
-                                border: "none",
-                                borderRadius: "10px",
-                                cursor: "pointer",
-                              }}
+                              className="delete-button"
                             >
                               <IconTrash size={20} />
                             </motion.button>
@@ -419,68 +216,27 @@ export default function Shop() {
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
-                style={{
-                  background: "white",
-                  borderRadius: "16px",
-                  padding: "2rem",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                  position: "sticky",
-                  top: "20px",
-                }}
+                className="order-summary"
               >
-                <h2
-                  style={{
-                    fontSize: "1.5rem",
-                    fontWeight: "700",
-                    color: "#1A1A1A",
-                    marginBottom: "1.5rem",
-                  }}
-                >
-                  Résumé de commande
-                </h2>
+                <h2 className="summary-title">Résumé de commande</h2>
 
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "0.75rem",
-                      fontSize: "1rem",
-                      color: "#666",
-                    }}
-                  >
+                <div className="summary-details">
+                  <div className="summary-row">
                     <span>Sous-total ({calculateTotalItems()} articles)</span>
-                    <span style={{ fontWeight: "600" }}>
+                    <span className="summary-value">
                       {calculateTotal().toLocaleString()} FCFA
                     </span>
                   </div>
 
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "0.75rem",
-                      fontSize: "1rem",
-                      color: "#666",
-                    }}
-                  >
+                  <div className="summary-row">
                     <span>Livraison</span>
-                    <span style={{ fontWeight: "600", color: "#4CAF50" }}>
+                    <span className="summary-value free-shipping">
                       {calculateTotal() >= 50000 ? "Gratuite" : "5 000 FCFA"}
                     </span>
                   </div>
 
                   {calculateTotal() < 50000 && (
-                    <div
-                      style={{
-                        padding: "0.75rem",
-                        background: "#FFF3E0",
-                        borderRadius: "8px",
-                        fontSize: "0.85rem",
-                        color: "#FF7F00",
-                        marginTop: "1rem",
-                      }}
-                    >
+                    <div className="shipping-tip">
                       💡 Plus que{" "}
                       {(50000 - calculateTotal()).toLocaleString()} FCFA pour la
                       livraison gratuite !
@@ -488,24 +244,10 @@ export default function Shop() {
                   )}
                 </div>
 
-                <div
-                  style={{
-                    borderTop: "2px solid #E0E0E0",
-                    paddingTop: "1.5rem",
-                    marginBottom: "1.5rem",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "1.5rem",
-                      fontWeight: "700",
-                      color: "#1A1A1A",
-                    }}
-                  >
+                <div className="summary-total">
+                  <div className="total-row">
                     <span>Total</span>
-                    <span style={{ color: "#FF7F00" }}>
+                    <span className="total-value">
                       {(
                         calculateTotal() +
                         (calculateTotal() < 50000 ? 5000 : 0)
@@ -519,44 +261,15 @@ export default function Shop() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleCheckout}
-                  style={{
-                    width: "100%",
-                    padding: "1.1rem",
-                    background: "#FF7F00",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "12px",
-                    fontSize: "1.1rem",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "0.75rem",
-                    boxShadow: "0 4px 16px rgba(255,127,0,0.3)",
-                    
-                  }}
+                  className="checkout-button"
                 >
                   <IconShoppingCart size={24} />
                   Procéder au paiement
                 </motion.button>
 
-                <div
-                  style={{
-                    marginTop: "1.5rem",
-                    padding: "1rem",
-                    background: "#F5F5F5",
-                    borderRadius: "12px",
-                    fontSize: "0.85rem",
-                    color: "#666",
-                  }}
-                >
-                  <div style={{ marginBottom: "0.5rem" }}>
-                    ✓ Paiement sécurisé
-                  </div>
-                  <div style={{ marginBottom: "0.5rem" }}>
-                    ✓ Livraison sous 2-5 jours
-                  </div>
+                <div className="summary-info">
+                  <div>✓ Paiement sécurisé</div>
+                  <div>✓ Livraison sous 2-5 jours</div>
                   <div>✓ Retour sous 14 jours</div>
                 </div>
               </motion.div>
@@ -567,15 +280,524 @@ export default function Shop() {
 
       <Footer />
 
-      <style>
-        {`
-          @media (max-width: 1024px) {
-            div[style*="gridTemplateColumns: 1fr 400px"] {
-              grid-template-columns: 1fr !important;
-            }
+      <style>{`
+        .cart-container {
+          min-height: 100vh;
+          background: #FAFAFA;
+          padding: 2rem 1.5rem 3rem;
+          font-family: 'Work Sans', sans-serif;
+        }
+
+        .cart-content {
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+
+        .cart-header {
+          margin-bottom: 2rem;
+        }
+
+        .header-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+          gap: 1rem;
+        }
+
+        .cart-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: #1A1A1A;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .cart-icon {
+          color: #FF7F00;
+        }
+
+        .continue-shopping {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1.25rem;
+          background: white;
+          color: #666;
+          border: 1px solid #E0E0E0;
+          border-radius: 10px;
+          font-size: 0.95rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.2s ease;
+        }
+
+        .continue-shopping:hover {
+          border-color: #FF7F00;
+          color: #FF7F00;
+        }
+
+        .continue-text {
+          white-space: nowrap;
+        }
+
+        .cart-subtitle {
+          font-size: 1.1rem;
+          color: #666;
+        }
+
+        .empty-cart {
+          background: white;
+          border-radius: 16px;
+          padding: 4rem 2rem;
+          text-align: center;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .empty-icon {
+          color: #E0E0E0;
+          margin-bottom: 2rem;
+        }
+
+        .empty-title {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: #1A1A1A;
+          margin-bottom: 1rem;
+        }
+
+        .empty-text {
+          font-size: 1.1rem;
+          color: #666;
+          margin-bottom: 2rem;
+        }
+
+        .shop-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 1rem 2rem;
+          background: #FF7F00;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 1.1rem;
+          font-weight: 700;
+          text-decoration: none;
+          box-shadow: 0 4px 16px rgba(255,127,0,0.3);
+          transition: transform 0.2s ease;
+        }
+
+        .shop-button:hover {
+          transform: scale(1.05);
+        }
+
+        .cart-grid {
+          display: grid;
+          grid-template-columns: 1fr 400px;
+          gap: 2rem;
+          align-items: start;
+        }
+
+        .items-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .cart-item {
+          background: white;
+          border-radius: 16px;
+          padding: 1.5rem;
+          display: flex;
+          gap: 1.5rem;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .item-image {
+          min-width: 120px;
+          width: 120px;
+          height: 120px;
+          background: #F5F5F5;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+
+        .item-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .item-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .item-category {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          background: #FFF3E0;
+          color: #FF7F00;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          width: fit-content;
+        }
+
+        .item-title {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #1A1A1A;
+          margin-bottom: 0.5rem;
+        }
+
+        .item-description {
+          color: #666;
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .item-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: auto;
+        }
+
+        .item-price-section {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .item-price {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #FF7F00;
+        }
+
+        .item-stock {
+          font-size: 0.85rem;
+          color: #999;
+        }
+
+        .item-controls {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .quantity-controls {
+          display: flex;
+          align-items: center;
+          border: 2px solid #E0E0E0;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+
+        .quantity-button {
+          padding: 0.5rem 0.75rem;
+          background: white;
+          border: none;
+          cursor: pointer;
+          color: #1A1A1A;
+        }
+
+        .quantity-button:disabled {
+          cursor: not-allowed;
+          color: #ccc;
+        }
+
+        .quantity-display {
+          padding: 0.5rem 1rem;
+          font-size: 1rem;
+          font-weight: 700;
+          border-left: 2px solid #E0E0E0;
+          border-right: 2px solid #E0E0E0;
+        }
+
+        .delete-button {
+          padding: 0.75rem;
+          background: #FEE;
+          color: #C33;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+        }
+
+        .order-summary {
+          background: white;
+          border-radius: 16px;
+          padding: 2rem;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+          position: sticky;
+          top: 20px;
+        }
+
+        .summary-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1A1A1A;
+          margin-bottom: 1.5rem;
+        }
+
+        .summary-details {
+          margin-bottom: 1.5rem;
+        }
+
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.75rem;
+          font-size: 1rem;
+          color: #666;
+        }
+
+        .summary-value {
+          font-weight: 600;
+        }
+
+        .free-shipping {
+          color: #4CAF50;
+        }
+
+        .shipping-tip {
+          padding: 0.75rem;
+          background: #FFF3E0;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          color: #FF7F00;
+          margin-top: 1rem;
+        }
+
+        .summary-total {
+          border-top: 2px solid #E0E0E0;
+          padding-top: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .total-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1A1A1A;
+        }
+
+        .total-value {
+          color: #FF7F00;
+        }
+
+        .checkout-button {
+          width: 100%;
+          padding: 1.1rem;
+          background: #FF7F00;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 1.1rem;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          box-shadow: 0 4px 16px rgba(255,127,0,0.3);
+        }
+
+        .summary-info {
+          margin-top: 1.5rem;
+          padding: 1rem;
+          background: #F5F5F5;
+          border-radius: 12px;
+          font-size: 0.85rem;
+          color: #666;
+        }
+
+        .summary-info > div {
+          margin-bottom: 0.5rem;
+        }
+
+        .summary-info > div:last-child {
+          margin-bottom: 0;
+        }
+
+        /* Media Queries pour Mobile */
+        @media (max-width: 1024px) {
+          .cart-grid {
+            grid-template-columns: 1fr;
           }
-        `}
-      </style>
+
+          .order-summary {
+            position: relative;
+            top: 0;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .cart-container {
+            padding: 1rem 1rem 2rem;
+          }
+
+          .header-top {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .cart-title {
+            font-size: 1.8rem;
+          }
+
+          .cart-icon {
+            width: 32px;
+            height: 32px;
+          }
+
+          .continue-shopping {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+          }
+
+          .cart-subtitle {
+            font-size: 1rem;
+          }
+
+          .empty-cart {
+            padding: 3rem 1.5rem;
+          }
+
+          .empty-icon {
+            width: 80px;
+            height: 80px;
+          }
+
+          .empty-title {
+            font-size: 1.5rem;
+          }
+
+          .empty-text {
+            font-size: 1rem;
+          }
+
+          .cart-item {
+            flex-direction: column;
+            padding: 1.25rem;
+            gap: 1rem;
+          }
+
+          .item-image {
+            width: 100%;
+            height: 200px;
+            min-width: unset;
+          }
+
+          .item-title {
+            font-size: 1.1rem;
+          }
+
+          .item-description {
+            font-size: 0.85rem;
+          }
+
+          .item-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+
+          .item-controls {
+            width: 100%;
+            justify-content: space-between;
+          }
+
+          .item-price {
+            font-size: 1.3rem;
+          }
+
+          .order-summary {
+            padding: 1.5rem;
+          }
+
+          .summary-title {
+            font-size: 1.3rem;
+            margin-bottom: 1.25rem;
+          }
+
+          .summary-row {
+            font-size: 0.95rem;
+          }
+
+          .shipping-tip {
+            font-size: 0.8rem;
+          }
+
+          .total-row {
+            font-size: 1.3rem;
+          }
+
+          .checkout-button {
+            padding: 1rem;
+            font-size: 1rem;
+          }
+
+          .summary-info {
+            font-size: 0.8rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .cart-title {
+            font-size: 1.5rem;
+            gap: 0.75rem;
+          }
+
+          .cart-icon {
+            width: 28px;
+            height: 28px;
+          }
+
+          .continue-shopping {
+            font-size: 0.9rem;
+          }
+
+          .item-image {
+            height: 180px;
+          }
+
+          .item-title {
+            font-size: 1rem;
+          }
+
+          .item-price {
+            font-size: 1.2rem;
+          }
+
+          .item-stock {
+            font-size: 0.8rem;
+          }
+
+          .quantity-button {
+            padding: 0.4rem 0.6rem;
+          }
+
+          .quantity-display {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.95rem;
+          }
+
+          .delete-button {
+            padding: 0.6rem;
+          }
+        }
+      `}</style>
     </>
   );
 }
