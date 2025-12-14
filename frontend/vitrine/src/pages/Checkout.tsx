@@ -761,7 +761,7 @@ export default function ProductDetail() {
             padding: 0.6rem 1rem;
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
-            margin-top: 2rem;
+            margin-top: 4rem;
           }
 
           .product-grid {
