@@ -306,7 +306,7 @@ export const createproduct = async (
   productData: ProductData
 ): Promise<ApiResponse> => {
   try {
-    console.log('📦 Création produit:', productData);
+    console.log(' Création produit:', productData);
 
     const formData = new FormData();
 
@@ -319,13 +319,13 @@ export const createproduct = async (
 
     // Ajout des images
     if (productData.images?.length) {
-      console.log(`📸 Ajout de ${productData.images.length} image(s)`);
+      console.log(` Ajout de ${productData.images.length} image(s)`);
       productData.images.forEach((file, index) => {
         console.log(`Image ${index + 1}:`, file.name, file.type, file.size);
         formData.append('images', file);
       });
     } else {
-      console.warn('⚠️ Aucune image fournie');
+      console.warn(' Aucune image fournie');
     }
 
     // Log pour debug
@@ -339,20 +339,20 @@ export const createproduct = async (
       // Pas de headers ! Le navigateur gère automatiquement
     });
 
-    console.log('📡 Statut de la réponse:', response.status);
+    console.log(' Statut de la réponse:', response.status);
 
     const data: ApiResponse = await response.json();
 
     if (!response.ok) {
-      console.error('❌ Erreur serveur:', data);
+      console.error(' Erreur serveur:', data);
       throw new Error(data.message || data.error || 'Erreur création produit');
     }
 
-    console.log('✅ Produit créé avec succès:', data);
+    console.log(' Produit créé avec succès:', data);
     return data;
 
   } catch (error: any) {
-    console.error('❌ Erreur création produit:', error);
+    console.error(' Erreur création produit:', error);
     throw error;
   }
 };
@@ -376,11 +376,11 @@ export const productlist = async (): Promise<any[]> => {
       throw new Error(data.error || data.message || "Erreur récupération produits");
     }
 
-    console.log('📋 Produits récupérés:', data.length);
+    console.log(' Produits récupérés:', data.length);
     return data;
 
   } catch (error: any) {
-    console.error('❌ Erreur productlist:', error);
+    console.error(' Erreur productlist:', error);
     throw error;
   }
 };

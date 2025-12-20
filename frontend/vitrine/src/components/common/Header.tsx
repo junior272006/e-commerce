@@ -8,7 +8,6 @@ import {
   ScrollArea,
   Text,
   Stack,
-  Menu,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -16,9 +15,6 @@ import {
   IconBox,
   IconShoppingCart,
   IconPhone,
-  IconShirt,
-  IconShoe,
-  IconDeviceLaptop
 } from '@tabler/icons-react';
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -55,32 +51,13 @@ export default function Header() {
               </Link>
             </motion.div>
 
-            {/* PRODUITS */}
+            {/* PRODUITS - Lien simple sans dropdown */}
             <motion.div whileHover={{ scale: 1.06 }} transition={{ type: "spring", stiffness: 250 }}>
-              <Menu shadow="md" width={200} trigger="hover" openDelay={100} closeDelay={150}>
-                <Menu.Target>
-                  <a className={classes.link} style={{ cursor: "pointer" }}>
-                    <Group gap="xs">
-                      <IconBox size={18} /> Produits
-                    </Group>
-                  </a>
-                </Menu.Target>
-
-                {/* Dropdown animé */}
-               <Menu.Dropdown>
-  <motion.div
-    initial={{ opacity: 0, y: -10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.2 }}
-  >
-    <Menu.Item leftSection={<IconShirt size={18} />}>Vêtements Homme</Menu.Item>
-    <Menu.Item leftSection={<IconShirt size={18} />}>Vêtements Femme</Menu.Item>
-    <Menu.Item leftSection={<IconDeviceLaptop size={18} />}>Accessoires</Menu.Item>
-    <Menu.Item leftSection={<IconShoe size={18} />}>Chaussures</Menu.Item>
-  </motion.div>
-</Menu.Dropdown>
-
-              </Menu>
+              <Link to="/categorie" className={classes.link}>
+                <Group gap="xs">
+                  <IconBox size={18} /> Produits
+                </Group>
+              </Link>
             </motion.div>
 
             {/* Panier */}
@@ -152,19 +129,14 @@ export default function Header() {
               <Group gap="xs"><IconHome size={18}/> Accueil</Group>
             </Link>
 
-            {/* PRODUITS mobile */}
-            <Stack gap={4} px="md" mt="xs">
-              <Text fw={600} size="sm">
-                <Group gap={4}><IconBox size={18}/> Produits</Group>
-              </Text>
+            {/* PRODUITS mobile - Lien simple */}
+            <Link to="/categorie" className={classes.link} onClick={closeDrawer}>
+              <Group gap="xs"><IconBox size={18}/> Produits</Group>
+            </Link>
 
-              <a className={classes.link}><Group gap="xs"><IconShirt size={16}/> Vêtements Homme</Group></a>
-              <a className={classes.link}><Group gap="xs"><IconShirt size={16}/> Vêtements Femme</Group></a>
-              <a className={classes.link}><Group gap="xs"><IconDeviceLaptop size={16}/> Accessoires</Group></a>
-              <a className={classes.link}><Group gap="xs"><IconShoe size={16}/> Chaussures</Group></a>
-            </Stack>
-
-             <Link to="/panier" className={classes.link} onClick={closeDrawer}><Group gap="xs"><IconShoppingCart size={18}/> Panier</Group></Link>
+            <Link to="/panier" className={classes.link} onClick={closeDrawer}>
+              <Group gap="xs"><IconShoppingCart size={18}/> Panier</Group>
+            </Link>
 
             <Link to="/contact" className={classes.link} onClick={closeDrawer}>
               <Group gap="xs"><IconPhone size={18}/> Contactez-nous</Group>

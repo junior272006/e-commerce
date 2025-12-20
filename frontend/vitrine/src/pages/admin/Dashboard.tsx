@@ -4,7 +4,6 @@ import {
   IconHome,
   IconShoppingBag,
   IconUsers,
-  IconChartBar,
   IconMessage,
   IconLogout,
   IconPlus,
@@ -63,7 +62,6 @@ export default function AdminDashboard() {
     { label: "Dashboard", icon: IconHome },
     { label: "Produits", icon: IconShoppingBag },
     { label: "Clients", icon: IconUsers },
-    { label: "Statistiques", icon: IconChartBar },
     { label: "Messages", icon: IconMessage },
   ];
 
@@ -222,7 +220,6 @@ export default function AdminDashboard() {
     { label: "Total Clients", value: users.length, icon: IconUsers, color: "#FF7F00", bgColor: "#FFF3E0" },
     { label: "Total Produits", value: products.length, icon: IconShoppingBag, color: "#8E8E8E", bgColor: "#F5F5F5" },
     { label: "Messages", value: messages.length, icon: IconMessage, color: "#FF7F00", bgColor: "#FFF3E0" },
-    { label: "Ventes", value: "0 FCFA", icon: IconChartBar, color: "#8E8E8E", bgColor: "#F5F5F5" },
   ];
 
   return (
@@ -691,21 +688,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {active === "Statistiques" && (
-          <div
-            style={{
-              background: "white",
-              padding: "4rem",
-              borderRadius: "20px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-              textAlign: "center",
-              color: "#999",
-              fontSize: "1.2rem",
-            }}
-          >
-            Les statistiques s'afficheront ici...
-          </div>
-        )}
+      
       </main>
 
       <AnimatePresence>

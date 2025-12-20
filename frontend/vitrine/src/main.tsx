@@ -10,6 +10,7 @@ import Inscription from './pages/Register.tsx';
 import { theme } from './theme.ts';
 import ProductDetail from './pages/Checkout.tsx';
 import Shop from './pages/Shop.tsx';
+import Categorie from './pages/Cat.tsx';
 import Product from './pages/ProductPage.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import AdminLogin from './pages/admin/Login.tsx';
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
            <Route path="/product" element={<Product />} />
             <Route path="/panier" element={<Shop />} />
            <Route path="/product-detail" element={<ProductDetail />} />
+ <Route path="/categorie" element={<Categorie />} />
 <Route path="/user/login" element={<Login />} />
 <Route path="/contact" element={<Contact />} />
           <Route path="/admin/login" element={<AdminLogin />} />

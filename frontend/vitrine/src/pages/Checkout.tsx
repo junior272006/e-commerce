@@ -219,7 +219,7 @@ export default function ProductDetail() {
           className="notification"
         >
           <IconHeart size={20} fill={isLiked ? "white" : "none"} />
-          {isLiked ? "Produit ajouté aux favoris ❤️" : "Produit retiré des favoris"}
+          {isLiked ? "Produit ajouté aux favoris" : "Produit retiré des favoris"}
         </motion.div>
       )}
 
@@ -232,7 +232,7 @@ export default function ProductDetail() {
           className="notification cart-notification"
         >
           <IconShoppingCart size={20} />
-          {quantity} x "{product?.title}" ajouté au panier ! 🛒
+          {quantity} x "{product?.title}" ajouté au panier !
         </motion.div>
       )}
 
@@ -310,7 +310,7 @@ export default function ProductDetail() {
               <h1 className="product-title">{product.title}</h1>
 
               <div className="product-price">
-                {product.price.toLocaleString()} FCFA
+                {(product.price * quantity).toLocaleString()} FCFA
               </div>
 
               <div className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
@@ -345,8 +345,8 @@ export default function ProductDetail() {
                       <IconPlus size={20} />
                     </button>
                   </div>
-                  <div className="total-price">
-                    Prix total: <strong>{(product.price * quantity).toLocaleString()} FCFA</strong>
+                  <div className="unit-price">
+                    Prix unitaire: <strong>{product.price.toLocaleString()} FCFA</strong>
                   </div>
                 </div>
               </div>
@@ -360,7 +360,6 @@ export default function ProductDetail() {
                   disabled={product.stock === 0}
                   className={`add-to-cart-button ${product.stock === 0 ? 'disabled' : ''}`}
                 >
-                  <IconShoppingCart size={24} />
                   {product.stock === 0 ? "Indisponible" : "Ajouter au panier"}
                 </motion.button>
 
@@ -668,7 +667,7 @@ export default function ProductDetail() {
           border-right: 2px solid #E0E0E0;
         }
 
-        .total-price {
+        .unit-price {
           font-size: 0.9rem;
           color: #666;
         }
@@ -827,57 +826,54 @@ export default function ProductDetail() {
 
           .quantity-controls-wrapper {
             flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
+            align-items: stretch;
+            gap: 0.5rem;
           }
 
           .quantity-controls {
-            width: 100%;
-            justify-content: space-between;
+            width: fit-content;
+            align-self: flex-start;
           }
 
           .quantity-button {
-            padding: 0.6rem 0.8rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
           }
 
           .quantity-display {
-            padding: 0.6rem 1.2rem;
-            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
           }
 
-          .total-price {
-            font-size: 0.85rem;
+          .unit-price {
+            font-size: 0.8rem;
             width: 100%;
+            color: #888;
           }
 
           .action-buttons {
             flex-wrap: wrap;
-            gap: 0.75rem;
+            gap: 0.5rem;
             margin-bottom: 1rem;
           }
 
           .add-to-cart-button {
             width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
-          }
-
-          .add-to-cart-button svg {
-            width: 22px;
-            height: 22px;
+            padding: 0.65rem;
+            font-size: 0.85rem;
           }
 
           .icon-button {
             flex: 1;
-            padding: 1rem;
+            padding: 0.65rem;
             display: flex;
             align-items: center;
             justify-content: center;
           }
 
           .icon-button svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
           }
 
           .additional-info {
