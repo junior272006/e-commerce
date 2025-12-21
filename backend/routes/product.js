@@ -11,5 +11,5 @@ router.post(
 
 // Route pour récupérer tous les produits
 router.get('/liste', getproduct);
-router.delete('/delete/:id',DeleteProduct)
+router.post('/delete',DeleteProduct)
 module.exports = router;
