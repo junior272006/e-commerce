@@ -17,16 +17,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Imports des routes
-const AdminRoute = require('./routes/admin');
-const UserRoute = require('./routes/user');
-const ContactRoute = require('./routes/contact');
-const ProductRoute = require('./routes/product');
-
-// IMPORTANT: Route avec Multer AVANT les middlewares json/urlencoded
-app.use('/api/product', ProductRoute);
-
-// Middlewares json/urlencoded APRÈS la route product
+// Middlewares json/urlencoded EN PREMIER (sauf pour les routes avec Multer)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -39,9 +30,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Autres routes
+// Imports des routes
+const AdminRoute = require('./routes/admin');
+const UserRoute = require('./routes/user');
+const ContactRoute = require('./routes/contact');
+const ProductRoute = require('./routes/product');
+
+// Routes
 app.use('/api', UserRoute);
 app.use('/api', AdminRoute);
 app.use('/api', ContactRoute);
+app.use('/api/product', ProductRoute);
 
 module.exports = app;

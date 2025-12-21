@@ -384,3 +384,30 @@ export const productlist = async (): Promise<any[]> => {
     throw error;
   }
 };
+
+//-----------------------SUPPRESSION PRODUIT------------------
+
+export const DeleteProduct = async (productId: string): Promise<ApiResponse> => {
+  try {
+    const response = await fetchWithTimeout(
+      `${API_URL}/product/delete/${productId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
+    const data: ApiResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "Erreur lors de la suppression");
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error('Erreur DeleteProduct:', error);
+    throw error;
+  }
+};

@@ -61,3 +61,14 @@ exports.getproduct = async (req, res) => {
     });
   }
 };
+
+
+exports.DeleteProduct = async (req, res, next) => {
+  try {
+    await Product.deleteOne({ _id: req.params.id });
+    
+    res.status(200).json({ message: 'Produit supprimé' });
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la suppression du produit' });
+  }
+};

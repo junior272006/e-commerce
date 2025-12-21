@@ -53,7 +53,7 @@ export default function Header() {
 
             {/* PRODUITS - Lien simple sans dropdown */}
             <motion.div whileHover={{ scale: 1.06 }} transition={{ type: "spring", stiffness: 250 }}>
-              <Link to="/categorie" className={classes.link}>
+              <Link to="/product" className={classes.link}>
                 <Group gap="xs">
                   <IconBox size={18} /> Produits
                 </Group>
@@ -130,7 +130,7 @@ export default function Header() {
             </Link>
 
             {/* PRODUITS mobile - Lien simple */}
-            <Link to="/categorie" className={classes.link} onClick={closeDrawer}>
+            <Link to="/product" className={classes.link} onClick={closeDrawer}>
               <Group gap="xs"><IconBox size={18}/> Produits</Group>
             </Link>
 
