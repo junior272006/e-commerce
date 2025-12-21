@@ -130,18 +130,30 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm("Supprimer ce produit ?")) return;
-    setDeleteLoading(id);
+  if (!confirm("Supprimer ce produit ?")) return;
+  
+  setDeleteLoading(id);
+  
+  try {
+    // ✅ 1. Supprime d'abord du state (mise à jour optimiste)
+    setProducts(prev => prev.filter(p => p._id !== id));
+    
+    // ✅ 2. Ensuite appelle l'API
+    await DeleteProduct(id);
+    
+    alert("Produit supprimé!");
+  } catch (err: any) {
+    // ❌ Si erreur, recharge la liste pour restaurer l'état correct
+    alert("Erreur: " + (err.message || "Suppression impossible"));
     try {
-      await DeleteProduct(id);
       setProducts(await productlist());
-      alert("Produit supprimé!");
-    } catch (err: any) {
-      alert("Erreur: " + (err.message || "Suppression impossible"));
-    } finally {
-      setDeleteLoading(null);
+    } catch (reloadErr) {
+      console.error("Erreur rechargement:", reloadErr);
     }
-  };
+  } finally {
+    setDeleteLoading(null);
+  }
+};
 
   const statCards = [
     { label: "Total Clients", value: users.length, icon: IconUsers, color: "#FF7F00", bgColor: "#FFF3E0" },

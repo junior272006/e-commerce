@@ -390,13 +390,13 @@ export const productlist = async (): Promise<any[]> => {
 export const DeleteProduct = async (id: string): Promise<ApiResponse> => {
   try {
     const response = await fetchWithTimeout(
-      `${API_URL}/product/delete`, // ✅ Sans l'ID
+      `${API_URL}/product/delete`, 
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }) // ✅ ID dans le body
+        body: JSON.stringify({ id })
       }
     );
 
