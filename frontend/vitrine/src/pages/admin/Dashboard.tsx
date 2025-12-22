@@ -129,27 +129,21 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteProduct = async (id: string) => {
+ const handleDeleteProduct = async (id: string) => {
   if (!confirm("Supprimer ce produit ?")) return;
   
   setDeleteLoading(id);
   
   try {
-    // ✅ 1. Supprime d'abord du state (mise à jour optimiste)
-    setProducts(prev => prev.filter(p => p._id !== id));
-    
-    // ✅ 2. Ensuite appelle l'API
+    // ✅ 1. Appelle d'abord l'API
     await DeleteProduct(id);
+    
+    // ✅ 2. Si succès, supprime du state
+    setProducts(prev => prev.filter(p => p._id !== id));
     
     alert("Produit supprimé!");
   } catch (err: any) {
-    // ❌ Si erreur, recharge la liste pour restaurer l'état correct
     alert("Erreur: " + (err.message || "Suppression impossible"));
-    try {
-      setProducts(await productlist());
-    } catch (reloadErr) {
-      console.error("Erreur rechargement:", reloadErr);
-    }
   } finally {
     setDeleteLoading(null);
   }

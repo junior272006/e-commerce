@@ -32,7 +32,7 @@ res.status(200).json(contacts)
   catch (error) {
  console.error("Erreur UserList:", error);
     res.status(500).json({ 
-      message: "Erreur lors de la récupération des utilisateurs", 
+      message: "Erreur lors de la récupération des messages", 
       error: error.message 
     });
   }

@@ -65,10 +65,13 @@ exports.getproduct = async (req, res) => {
 
 exports.DeleteProduct = async (req, res, next) => {
   try {
-    await Product.deleteOne({ _id: req.params.id });
-    
-    res.status(200).json({ message: 'Produit supprimé' });
+    // ✅ Prendre l'ID depuis le body au lieu de params
+    const { id } = req.body;
+
+    const result = await Product.deleteOne({ _id: id })
+    res.status(200).json({ message: 'Produit supprimé avec succès' });
   } catch (error) {
+    console.error('Erreur suppression:', error);
     res.status(500).json({ message: 'Erreur lors de la suppression du produit' });
   }
 };
