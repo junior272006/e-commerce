@@ -4,10 +4,12 @@ import {
   IconHome, IconShoppingBag, IconUsers, IconMessage, IconLogout, IconPlus,
   IconLoader, IconAlertCircle, IconX, IconUpload, IconTrash, IconEdit,
 } from "@tabler/icons-react";
-import { userlist, usermessage, createproduct, productlist, DeleteProduct } from "../../api/authService";
-import type { MessageData } from "../../api/authService";
+import { userlist, usermessage, createproduct, productlist, DeleteProduct, modifyProduct } from "../../api/authService";
+import type { MessageData, ProductData } from "../../api/authService";
 
 const API_BASE_URL = "https://e-commerce-3-clba.onrender.com";
+
+
 
 interface User {
   _id: string;
@@ -53,6 +55,7 @@ export default function AdminDashboard() {
   const [showProductForm, setShowProductForm] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [productForm, setProductForm] = useState({
     title: "", description: "", price: 0, category: "", stock: 0,
   });
@@ -117,10 +120,7 @@ export default function AdminDashboard() {
     try {
       await createproduct({ ...productForm, images: selectedFiles });
       setProducts(await productlist());
-      setProductForm({ title: "", description: "", price: 0, category: "", stock: 0 });
-      setSelectedFiles([]);
-      setPreviewUrls([]);
-      setShowProductForm(false);
+      closeForm();
       alert("Produit créé!");
     } catch (err: any) {
       alert("Erreur: " + (err.message || "Création impossible"));
@@ -129,25 +129,89 @@ export default function AdminDashboard() {
     }
   };
 
- const handleDeleteProduct = async (id: string) => {
-  if (!confirm("Supprimer ce produit ?")) return;
-  
-  setDeleteLoading(id);
-  
-  try {
-    // ✅ 1. Appelle d'abord l'API
-    await DeleteProduct(id);
+  const handleEditProduct = async (product: Product) => {
+    setEditingProduct(product);
+    setProductForm({
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      category: product.category,
+      stock: product.stock,
+    });
+    setSelectedFiles([]);
+    setPreviewUrls(product.images.map(img => 
+      img.startsWith('http') ? img : `${API_BASE_URL}${img}`
+    ));
+    setShowProductForm(true);
+  };
+
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // ✅ 2. Si succès, supprime du state
-    setProducts(prev => prev.filter(p => p._id !== id));
+    if (!editingProduct) return;
     
-    alert("Produit supprimé!");
-  } catch (err: any) {
-    alert("Erreur: " + (err.message || "Suppression impossible"));
-  } finally {
-    setDeleteLoading(null);
-  }
-};
+    if (productForm.price <= 0) return alert("Prix invalide");
+    if (productForm.stock < 0) return alert("Stock invalide");
+    if (!productForm.title.trim() || !productForm.description.trim() || !productForm.category) {
+      return alert("Champs manquants");
+    }
+
+    setFormLoading(true);
+    try {
+      const productData: Partial<ProductData> = {
+        title: productForm.title,
+        description: productForm.description,
+        price: productForm.price,
+        category: productForm.category,
+        stock: productForm.stock,
+      };
+
+      // Si de nouvelles images sont sélectionnées, elles seront traitées par l'API
+      if (selectedFiles.length > 0) {
+        productData.images = selectedFiles;
+      }
+
+      await modifyProduct(editingProduct._id, productData);
+      
+      // Recharger la liste des produits
+      setProducts(await productlist());
+      
+      // Réinitialiser le formulaire
+      closeForm();
+      
+      alert("Produit modifié avec succès!");
+    } catch (err: any) {
+      alert("Erreur lors de la modification: " + (err.message || "Modification impossible"));
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    if (!confirm("Supprimer ce produit ?")) return;
+    
+    setDeleteLoading(id);
+    
+    try {
+      await DeleteProduct(id);
+      setProducts(prev => prev.filter(p => p._id !== id));
+      alert("Produit supprimé!");
+    } catch (err: any) {
+      alert("Erreur: " + (err.message || "Suppression impossible"));
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  const closeForm = () => {
+    setShowProductForm(false);
+    setEditingProduct(null);
+    setProductForm({ title: "", description: "", price: 0, category: "", stock: 0 });
+    setSelectedFiles([]);
+    setPreviewUrls([]);
+  };
+
+  const handleFormSubmit = editingProduct ? handleUpdateProduct : handleSubmitProduct;
 
   const statCards = [
     { label: "Total Clients", value: users.length, icon: IconUsers, color: "#FF7F00", bgColor: "#FFF3E0" },
@@ -262,7 +326,11 @@ export default function AdminDashboard() {
                             <td style={{ padding: "1rem" }}>
                               <div style={{ display: "flex", gap: "0.75rem" }}>
                                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                                  <IconEdit size={20} style={{ cursor: "pointer", color: "#8E8E8E" }} />
+                                  <IconEdit 
+                                    size={20} 
+                                    style={{ cursor: "pointer", color: "#8E8E8E" }} 
+                                    onClick={() => handleEditProduct(p)} 
+                                  />
                                 </motion.div>
                                 <motion.div whileHover={{ scale: deleteLoading === p._id ? 1 : 1.1 }} whileTap={{ scale: deleteLoading === p._id ? 1 : 0.9 }}>
                                   {deleteLoading === p._id ? (
@@ -353,19 +421,21 @@ export default function AdminDashboard() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", display: "flex",
               alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "2rem", backdropFilter: "blur(4px)" }}
-            onClick={() => setShowProductForm(false)}>
+            onClick={closeForm}>
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
               style={{ background: "white", borderRadius: "24px", padding: "2.5rem", maxWidth: "640px", width: "100%",
                 maxHeight: "90vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-                <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#1A1A1A" }}>Ajouter un produit</h2>
+                <h2 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#1A1A1A" }}>
+                  {editingProduct ? "Modifier le produit" : "Ajouter un produit"}
+                </h2>
                 <motion.div whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }}>
-                  <IconX size={28} style={{ cursor: "pointer", color: "#999" }} onClick={() => setShowProductForm(false)} />
+                  <IconX size={28} style={{ cursor: "pointer", color: "#999" }} onClick={closeForm} />
                 </motion.div>
               </div>
 
-              <form onSubmit={handleSubmitProduct} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>Titre *</label>
                   <input type="text" value={productForm.title} onChange={(e) => setProductForm({ ...productForm, title: e.target.value })}
@@ -397,7 +467,9 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>Images (max 5) *</label>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#333" }}>
+                    Images (max 5) {!editingProduct && "*"}
+                  </label>
                   <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "2rem",
                     border: "2px dashed #E0E0E0", borderRadius: "12px", cursor: "pointer", background: "#FAFAFA" }}>
                     <IconUpload size={24} color="#FF7F00" />
@@ -417,9 +489,14 @@ export default function AdminDashboard() {
                       ))}
                     </div>
                   )}
+                  {editingProduct && (
+                    <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#666" }}>
+                      Laissez vide pour conserver les images actuelles
+                    </p>
+                  )}
                 </div>
                 <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                  <motion.button type="button" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setShowProductForm(false)}
+                  <motion.button type="button" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={closeForm}
                     style={{ flex: 1, padding: "1rem", border: "2px solid #E0E0E0", borderRadius: "12px", background: "white", cursor: "pointer", fontSize: "1rem", fontWeight: "600", color: "#666" }}>
                     Annuler
                   </motion.button>
@@ -427,7 +504,7 @@ export default function AdminDashboard() {
                     style={{ flex: 1, padding: "1rem", border: "none", borderRadius: "12px", background: formLoading ? "#ccc" : "#FF7F00",
                       color: "white", cursor: formLoading ? "not-allowed" : "pointer", fontSize: "1rem", fontWeight: "600",
                       boxShadow: formLoading ? "none" : "0 4px 12px rgba(255,127,0,0.25)" }}>
-                    {formLoading ? "Création..." : "Créer"}
+                    {formLoading ? (editingProduct ? "Modification..." : "Création...") : (editingProduct ? "Modifier" : "Créer")}
                   </motion.button>
                 </div>
               </form>

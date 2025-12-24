@@ -67,11 +67,35 @@ exports.DeleteProduct = async (req, res, next) => {
   try {
     // ✅ Prendre l'ID depuis le body au lieu de params
     const { id } = req.body;
+    
+    
 
-    const result = await Product.deleteOne({ _id: id })
+    const result = await Product.deleteOne({ _id: id });
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Produit non trouvé' });
+    }
+    
     res.status(200).json({ message: 'Produit supprimé avec succès' });
   } catch (error) {
     console.error('Erreur suppression:', error);
     res.status(500).json({ message: 'Erreur lors de la suppression du produit' });
+  }
+};
+
+exports.ModifyProduct = async (req, res, next) => {
+  try {
+    const { id } = req.body;
+    
+    const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
+    
+    if (!product) {
+      return res.status(404).json({ message: 'Produit non trouvé' });
+    }
+    
+    res.status(200).json({ message: 'Produit modifié', product });
+    
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la modification' });
   }
 };

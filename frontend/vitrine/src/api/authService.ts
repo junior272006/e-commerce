@@ -412,3 +412,31 @@ export const DeleteProduct = async (id: string): Promise<ApiResponse> => {
     throw error;
   }
 };
+
+//-----------------MODIFICATION PRODUIT-----------------------
+
+export const modifyProduct = async (
+  id: string, 
+  productData: Partial<ProductData>
+): Promise<ApiResponse> => {
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/product/modification`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, ...productData })
+    });
+
+    const data: ApiResponse = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "Erreur lors de la modification");
+    }
+    
+    return data;
+  } catch (error: any) {
+    console.error('Erreur modifyProduct:', error);
+    throw error;
+  }
+};
